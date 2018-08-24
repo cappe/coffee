@@ -1,7 +1,7 @@
-import TpLinkCloud from "../shared/tplink-cloud.js";
-import jsonApi from "../shared/json-api.js";
+import SmartCoffee from './smart-coffee.js';
+import jsonApi from '../shared/json-api.js';
 
-let tp = new TpLinkCloud;
+let smartCoffee = new SmartCoffee;
 /** @type {HTMLInputElement} */
 let select = document.querySelector('#cloud-config-device');
 /** @type {HTMLInputElement} */
@@ -11,22 +11,19 @@ let txtPassword = document.querySelector('#cloud-config-password');
 /** @type {HTMLInputElement} */
 let txtSlackUrl = document.querySelector('#cloud-config-slack-url');
 
+let config;
+
 document.querySelector("#cloud-config-list-devices").addEventListener('click', async (e) => {
     e.preventDefault();
-    
+
     try {
-        await tp.login(txtEmail.value, txtPassword.value);
+        config = await smartCoffee.login(txtEmail.value, txtPassword.value);
     } catch (err) {
         alert("Kirjautuminen epäonnistui!");
         return;
     }
 
-    let devices = [];
-    (await tp.getDeviceList()).forEach((device) => {
-        // only HS110 supported as of now (no other models with eMeter exist)
-        if (/^HS110/.test(device.deviceModel))
-            devices.push(device);
-    });
+    let devices = await smartCoffee.getDevices(config.token);
 
     while (select.firstChild)
         select.removeChild(select.firstChild);
@@ -45,19 +42,20 @@ document.querySelector("#cloud-config-list-devices").addEventListener('click', a
 document.querySelector("#cloud-config-save").addEventListener('click', async (e) => {
     if (select.value) {
         var device = JSON.parse(select.value);
-        tp.deviceId = device.deviceId;
-        tp.alias = device.alias;
-        tp.appServerUrl = device.appServerUrl;
+        config.deviceId = device.deviceId;
+        config.alias = device.alias;
+        config.appServerUrl = device.appServerUrl;
     }
 
-    if (txtEmail.value && !tp.email)
-        tp.email = txtEmail.value;
+    if (txtEmail.value && !config.email)
+        config.email = txtEmail.value;
 
-    const response = await jsonApi.put('/api/coffeemakers/', {
-        cloud: tp,
-        slackUrl: txtSlackUrl.value
-    });
-
-    if (response.status === 403)
-        alert("Kirjautumistiedot vaaditaan tallentamista varten.");
+    try {
+        await jsonApi.put("/api/coffeemakers/", {
+            cloud: config,
+            slackUrl: txtSlackUrl.value
+        });
+    } catch (e) {
+        alert(e);
+    }
 });

@@ -6,6 +6,7 @@ import base64url from 'urlsafe-base64';
 
 import coffeeMakerRoutes from './coffeemakers';
 import pushSubscriptionRoutes from './push-subscriptions';
+import tplinkRoutes from './tplink';
 
 const router = express.Router();
 
@@ -19,5 +20,6 @@ router.use(bodyParser.json({strict: true, limit: 1024}));
 
 router.use('/coffeemakers', coffeeMakerRoutes);
 router.use('/push-subscriptions', pushSubscriptionRoutes);
+router.use('/tplink', tplinkRoutes);
 
 export default router;
