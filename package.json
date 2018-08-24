@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node --nolazy --experimental-modules --loader ./esm-loader.mjs ./app.js",
-    "debug": "node --nolazy --experimental-modules --loader ./esm-loader.mjs -r dotenv/config --inspect-brk=9229 ./app.js"
+    "debug": "node --nolazy --experimental-modules --loader ./esm-loader.mjs -r dotenv/config --inspect-brk=9229 ./app.js",
+    "vapid": "node --nolazy --experimental-modules --loader ./esm-loader.mjs -r dotenv/config ./scripts/create-vapid-keys.js"
   },
   "dependencies": {
     "body-parser": "~1.0.0",

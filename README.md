@@ -1,14 +1,15 @@
 ## Installation (for development)
 
-```
+```bash
 git clone git@github.com:valtzu/smart-coffee.git
 cd smart-coffee
 npm install
+npm run vapid
 ```
 
 You will also need a [RethinkDB server](https://rethinkdb.com/docs/install/ "How to install RethinkDB server").
 
-Finally copy .env.example to .env and set the config values. VAPID key creation has not yet been automated in this app, however, it is possible to do using the webpush module.
+Finally copy .env.example to .env and set the config values if needed.
 
 ## Debug
 ```
