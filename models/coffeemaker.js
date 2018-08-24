@@ -253,6 +253,20 @@ export default class CoffeeMaker extends ActiveRecord {
         }
     }
 
+    async refreshToken()
+    {
+        console.info(`${this.domain}: Trying to refresh the access token`);
+        try {
+            const oldToken = this.cloud.token;
+            await this.cloud.login();
+            if (oldToken !== this.cloud.token)
+                throw new Error("Unable to renew the token");
+            console.info("Access token refreshed");
+        } catch (err) {
+            console.error(`${this.domain}: ${err}`);
+        }
+    }
+
     /**
      * Updates the machine status from the cloud
      * @private
@@ -264,6 +278,9 @@ export default class CoffeeMaker extends ActiveRecord {
             this.state.current = await this.cloud.getEmeterStatus();
         } catch (err) {
             console.error(`${this.domain}: ${err}`);
+            if (/token expired/.test(err)) {
+                await this.refreshToken();
+            }
             return;
         }
 
