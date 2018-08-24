@@ -75,7 +75,7 @@ export default class TpLinkCloud {
      * @returns {Promise<{deviceId: string, alias: string, appServerUrl: string, deviceModel: string}[]>}
      */
     async getDeviceList() {
-        return (await this.request('getDeviceList')).deviceList;
+        return (await this.request('getDeviceList')).deviceList.filter(device => /^HS110/.test(device.deviceModel));
     }
 
     /**
