@@ -259,7 +259,7 @@ export default class CoffeeMaker extends ActiveRecord {
         try {
             const oldToken = this.cloud.token;
             await this.cloud.login();
-            if (oldToken !== this.cloud.token)
+            if (oldToken === this.cloud.token)
                 throw new Error("Unable to renew the token");
             console.info("Access token refreshed");
         } catch (err) {
