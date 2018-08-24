@@ -70,6 +70,8 @@ router.put('/', async (req, res, next) => {
     } catch (err) {
         console.error(err);
         newCoffeeMaker.stopListening();
+        res.status(503);
+        res.end();
     }
 
     res.status(204);
