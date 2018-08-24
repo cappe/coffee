@@ -68,6 +68,7 @@ router.put('/', async (req, res, next) => {
         await newCoffeeMaker.cloud.getEmeterStatus();
         newCoffeeMaker.startListening();
     } catch (err) {
+        console.error(err);
         newCoffeeMaker.stopListening();
     }
 
