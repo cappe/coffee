@@ -1,5 +1,5 @@
 {
-  "name": "kofeiini.fi",
+  "name": "smart-coffee",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -8,22 +8,22 @@
     "vapid": "node --nolazy --experimental-modules --loader ./esm-loader.mjs -r dotenv/config ./scripts/create-vapid-keys.js"
   },
   "dependencies": {
-    "body-parser": "^1.0.2",
-    "ejs": "^2.6.1",
-    "express": "^4.0.0",
-    "node-fetch": "^1.7.3",
-    "rethinkdbdash": "^2.3.31",
-    "urlsafe-base64": "^1.0.0",
-    "web-push": "^3.3.2"
+    "body-parser": "^1.18.3",
+    "ejs": "2.x",
+    "express": "^4.16.3",
+    "node-fetch": "1.x",
+    "rethinkdbdash": "2.x",
+    "urlsafe-base64": "1.x",
+    "web-push": "3.x"
   },
   "devDependencies": {
-    "@types/node": "^8.0.57",
+    "@types/node": "^8.10.27",
     "@types/rethinkdbdash": "github:types/rethinkdbdash",
-    "dotenv": "^4.0.0"
+    "dotenv": "4.x"
   },
   "engines": {
-    "node": "9.2.x",
-    "npm": "5.6.x"
+    "node": "10.x",
+    "npm": "6.x"
   },
   "license": "MIT"
 }
