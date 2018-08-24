@@ -23,6 +23,9 @@ export default class TpLinkCloud {
         this.token = props.token;
 
         /** @type {string} */
+        this.password = props.password;
+
+        /** @type {string} */
         this.email = props.email;
         
         /** @type {string} */
@@ -34,22 +37,23 @@ export default class TpLinkCloud {
 
     /**
      * Does the login and sets this.token
-     * @param {string} email 
-     * @param {string} password
-     * @returns {Promise<string>} The authentication token
+     * @returns {Promise<void>} The authentication token
      */
-    async login(email, password) {
+    async login() {
+        if (!this.email || !this.password)
+            throw new Error("Kirjautumistunnukset puuttuu");
+
         const result = await this.request('login', {
             appType: "Kasa_Android",
-            cloudUserName: email,
-            cloudPassword: password,
+            cloudUserName: this.email,
+            cloudPassword: this.password,
             terminalUUID:  ''
         });
 
-        this.token = result.token;
-        this.email = result.email || email;
+        if (!result || !result.token)
+            throw new Error("Kirjautuminen epäonnistui");
 
-        return this.token;
+        this.token = result.token;
     }
 
     /**
@@ -62,6 +66,8 @@ export default class TpLinkCloud {
         await this.request('logout', {
             cloudUserName: this.email
         });
+
+        this.token = null;
     }
 
     /**
