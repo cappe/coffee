@@ -32,12 +32,6 @@ export default class TpLinkCloud {
         this.appServerUrl = props.appServerUrl;
     }
 
-    static shouldCast(o) {
-        return (typeof o === 'object')
-            && ("token" in o)
-            && ("email" in o);
-    }
-
     /**
      * Does the login and sets this.token
      * @param {string} email 
