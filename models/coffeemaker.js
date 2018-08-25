@@ -188,7 +188,11 @@ export default class CoffeeMaker extends ActiveRecord {
         if (this.state.start === null)
             return false;
 
-        return !this.isHeatingTheWater();
+        // at least 10% of the batch must be ready, otherwise this is a false alarm
+        if ((this.state.current.progress || 0) < 0.10)
+            return false;
+
+        return !this.isHeatingTheWater(); 
     }
     
     /**
