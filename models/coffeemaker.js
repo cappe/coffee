@@ -226,6 +226,9 @@ export default class CoffeeMaker extends ActiveRecord {
         
         if (this.hasJustStartedHeatingTheWater()) {
             const startState = state.previous || state.current;
+            if (this.isColdStart())
+                startState.total += calibration.coldStartCompensationKwh;
+
             this.emit('starting', startState);
             state.start = startState;
             return;
@@ -233,10 +236,7 @@ export default class CoffeeMaker extends ActiveRecord {
             return;
         }
 
-        let kwh = state.current.total - state.start.total;
-        
-        if (this.isColdStart())
-            kwh -= calibration.coldStartCompensationKwh;
+        const kwh = Math.max(state.current.total - state.start.total, 0);
 
         state.current.progress = (kwh / calibration.kwhPerBatch) || 0;
 
