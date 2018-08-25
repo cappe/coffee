@@ -31,7 +31,8 @@ export default class CoffeeMaker extends ActiveRecord {
         if (!(props.cloud instanceof TpLinkCloud))
             props.cloud = new TpLinkCloud(props.cloud || {});
         
-        //if (!props.calibration) {
+        if (!props.calibration) {
+            // set the initial values
             props.calibration = Object.assign({
                 coldStartCompensationKwh: 0.004,
                 coldStartThresholdSeconds: 1200,
@@ -39,9 +40,9 @@ export default class CoffeeMaker extends ActiveRecord {
                 powerOnThresholdWatts: 5,
                 actionThresholdWatts: 150,
                 finishingSeconds: 30,
-                finishingSecondsPerBatch: 90 // this is untested
+                finishingSecondsPerBatch: 90
             }, props.calibration || {});
-        //}
+        }
 
         if (!props.state) {
             props.state = {
