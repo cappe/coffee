@@ -239,6 +239,11 @@ export default class CoffeeMaker extends ActiveRecord {
 
         const kwh = Math.max(state.current.total - state.start.total, 0);
 
+        // In case the current consumption exceeds the current kwhPerBatch value,
+        // let's do an automatic recalibration.
+        if (kwh > calibration.kwhPerBatch)
+            calibration.kwhPerBatch = kwh;
+
         state.current.progress = (kwh / calibration.kwhPerBatch) || 0;
 
         if (this.hasJustFinishedHeatingTheWater()) {
