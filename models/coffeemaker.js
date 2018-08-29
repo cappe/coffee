@@ -7,6 +7,11 @@ import EventLogEntry from './event-log-entry';
 /** @type {Object<string, NodeJS.Timer>} */
 const timers = {};
 
+/** @type {Number} */
+const POLLING_INTERVAL_DEFAULT = 5000; // 5 seconds
+const POLLING_INTERVAL_OFFLINE = 60000; // 1 minute
+const POLLING_INTERVAL_ERROR = 900000; // 15 minutes
+
 /**
  * @typedef CoffeeMakerCalibration
  * @property {number} coldStartCompensationKwh
@@ -24,6 +29,7 @@ const timers = {};
  * @property {TpLinkEmeterState} previous
  * @property {TpLinkEmeterState} current
  * @property {TpLinkEmeterState} start
+ * @property {Number} interval
  */
 export default class CoffeeMaker extends ActiveRecord {
 
@@ -50,7 +56,8 @@ export default class CoffeeMaker extends ActiveRecord {
                 previous: {},
                 current: {},
                 start: {},
-                lastPowerOff: null
+                lastPowerOff: null,
+                interval: POLLING_INTERVAL_DEFAULT
             };
         }
         
@@ -289,6 +296,7 @@ export default class CoffeeMaker extends ActiveRecord {
             console.info("Access token refreshed");
         } catch (err) {
             console.error(`${this.domain}: ${err}`);
+            this.stopListening();
         }
     }
 
@@ -298,15 +306,25 @@ export default class CoffeeMaker extends ActiveRecord {
      * @returns {Promise<void>}
      */
     async updateStatus () {
-        let state;
         try {
             this.state.current = await this.cloud.getEmeterStatus();
+
+            // if everything went well, let's make sure we are polling at the normal rate
+            if (this.state.interval !== POLLING_INTERVAL_DEFAULT)
+                this.setPollingInterval(POLLING_INTERVAL_DEFAULT);
         } catch (err) {
             console.error(`${this.domain}: ${err}`);
-            if (/token expired/.test(err)) {
-                await this.refreshToken();
+            switch (true) {
+                case /token expired/i.test(err):
+                    await this.refreshToken();
+                    return;
+                case /device is offline/i.test(err):
+                    this.setPollingInterval(POLLING_INTERVAL_OFFLINE);
+                    return;
+                default:
+                    this.setPollingInterval(POLLING_INTERVAL_ERROR);
+                    return;
             }
-            return;
         }
 
         this.updatePowerStatus();
@@ -328,22 +346,35 @@ export default class CoffeeMaker extends ActiveRecord {
 
     /**
      * Starts polling the device
-     * @param {number} interval 
      * @returns {void}
      */
-    startListening(interval = 5000) {
+    startListening() {
         if (this.isListening())
             return;
         
         if (!this.cloud.token) {
-            console.log(`No TP-Link cloud token provided for "${this.domain}"`);
+            console.error(`No TP-Link cloud token provided for "${this.domain}"`);
             return;
         }
 
-        console.log(`Started polling "${this.domain}" at the interval of ${interval} ms`);
+        console.info(`${this.domain}: Starting polling`);
         this.updateStatus().then(() => {
-            timers[this.domain] = setInterval(async () => await this.updateStatus(), interval);
+            this.setPollingInterval(this.state.interval);
         });
+    }
+
+    setPollingInterval(interval) {
+        const newPollingInterval = interval || POLLING_INTERVAL_DEFAULT;
+
+        if (newPollingInterval !== this.state.interval) {
+            this.state.interval = newPollingInterval;
+            console.info(`${this.domain}: Polling with the interval of ${newPollingInterval} ms`);
+        }
+
+        if (this.isListening())
+            clearInterval(timers[this.domain]);
+
+        timers[this.domain] = setInterval(async () => await this.updateStatus(), newPollingInterval);
     }
 
     /**
@@ -356,7 +387,7 @@ export default class CoffeeMaker extends ActiveRecord {
         
         clearInterval(timers[this.domain]);
         timers[this.domain] = null;
-        console.log(`Stopped polling ${this.domain}`);
+        console.log(`${this.domain}: Stopped polling`);
     }
     
 }
