@@ -2,6 +2,7 @@ import ActiveRecord from './active-record';
 import TpLinkCloud from '../shared/tplink-cloud.js';
 import PushSubscription from './push-subscription';
 import Notification from './notification';
+import EventLogEntry from './event-log-entry';
 
 /** @type {Object<string, NodeJS.Timer>} */
 const timers = {};
@@ -130,13 +131,27 @@ export default class CoffeeMaker extends ActiveRecord {
     }
 
     /**
+     * Log an event into event log table
+     * @param {string} event 
+     * @param {Object} params 
+     */
+    async log(event, params) {
+        const logEntry = new EventLogEntry({
+            domain: this.domain,
+            event,
+            params
+        });
+        await logEntry.save();
+    }
+
+    /**
      * 
      * @param {string} event
      * @param {Object} params
      */
     emit(event, params) {
-        console.log(`${this.domain}: ${event}`);
         const notification = Notification.get(event);
+        this.log(event, params);
 
         if (this.slackUrl && ['starting', 'finished', 'power-off'].indexOf(event) !== -1)
             notification.sendToSlack(this.slackUrl);
