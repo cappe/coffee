@@ -26,9 +26,9 @@ const POLLING_INTERVAL_ERROR = 900000; // 15 minutes
 /**
  * @typedef CoffeeMakerState
  * @property {Date} lastPowerOff
- * @property {TpLinkEmeterState} previous
- * @property {TpLinkEmeterState} current
- * @property {TpLinkEmeterState} start
+ * @property {{power: number, total: number, progress: number}} previous
+ * @property {{power: number, total: number, progress: number}} current
+ * @property {{power: number, total: number, progress: number}} start
  * @property {Number} interval
  */
 export default class CoffeeMaker extends ActiveRecord {
@@ -255,6 +255,8 @@ export default class CoffeeMaker extends ActiveRecord {
         
         if (this.hasJustStartedHeatingTheWater()) {
             const startState = state.previous || state.current;
+            startState.progress = 0;
+
             if (this.isColdStart())
                 startState.total += calibration.coldStartCompensationKwh;
 
@@ -276,14 +278,13 @@ export default class CoffeeMaker extends ActiveRecord {
 
         if (this.hasJustFinishedHeatingTheWater()) {
             this.emit('finishing', state.current);
+            const finishedState = Object.assign({}, state.current);
             state.start = null;
             setTimeout(() => {
-                this.emit('finished', state.current);
+                this.emit('finished', finishedState);
             }, (calibration.finishingSeconds + state.current.progress * calibration.finishingSecondsPerBatch) * 1000);
         } else if (this.hasJustMadeProgress()) {
-            setTimeout(() => {
-                this.emit('progress', state.current);
-            }, (calibration.finishingSeconds + state.current.progress * calibration.finishingSecondsPerBatch) * 1000);
+            this.emit('progress', state.current);
         }
     }
 
@@ -309,7 +310,8 @@ export default class CoffeeMaker extends ActiveRecord {
      */
     async updateStatus () {
         try {
-            this.state.current = await this.cloud.getEmeterStatus();
+            const { power, total } = await this.cloud.getEmeterStatus();
+            this.state.current = { power, total, progress: null };
 
             // if everything went well, let's make sure we are polling at the normal rate
             if (this.state.interval !== POLLING_INTERVAL_DEFAULT)
@@ -368,7 +370,7 @@ export default class CoffeeMaker extends ActiveRecord {
     setPollingInterval(interval) {
         const newPollingInterval = interval || POLLING_INTERVAL_DEFAULT;
 
-        if (newPollingInterval !== this.state.interval) {
+        if (newPollingInterval !== this.state.interval || !this.isListening()) {
             this.state.interval = newPollingInterval;
             console.info(`${this.domain}: Polling with the interval of ${newPollingInterval} ms`);
         }

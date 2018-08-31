@@ -9,7 +9,6 @@ import jsonApi from "./json-api.js";
  * @property {number} voltage
  * @property {number} power
  * @property {number} total
- * @property {number} cups
  * @property {number} err_code
  */
 
