@@ -13,7 +13,7 @@ router.use(async (req, res, next) => {
         req.coffeeMaker = new CoffeeMaker(req.body);
 
         // Always set/override domain from the request headers
-        req.coffeeMaker.set({domain: req.host});
+        req.coffeeMaker.set({domain: req.hostname});
     }
 
     return next();

@@ -16,7 +16,7 @@ router.use(async (req, res, next) => {
     req.pushSubscription = await PushSubscription.findOrNew(req.body);
     
     // Always set/override domain from the request headers
-    req.pushSubscription.set({domain: req.host});
+    req.pushSubscription.set({domain: req.hostname});
     
     return next();
 });

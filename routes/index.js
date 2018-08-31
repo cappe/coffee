@@ -9,7 +9,7 @@ const router = express.Router();
  */
 router.use(async (req, res, next) => {
     // Set CoffeeMaker instance to the request
-    res.locals.coffeeMaker = await CoffeeMaker.findOrNew({domain: req.host});
+    res.locals.coffeeMaker = await CoffeeMaker.findOrNew({domain: req.hostname});
     
     return next();
 });
