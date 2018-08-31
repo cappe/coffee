@@ -26,10 +26,10 @@ export default class TpLinkCloud {
 
         /** @type {string} */
         this.email = props.email;
-        
+
         /** @type {string} */
         this.deviceId = props.deviceId;
-        
+
         /** @type {string} */
         this.appServerUrl = props.appServerUrl;
     }
@@ -61,7 +61,7 @@ export default class TpLinkCloud {
     async logout() {
         if (!this.email || !this.token)
             return;
-        
+
         await this.request('logout', {
             cloudUserName: this.email
         });
@@ -78,15 +78,15 @@ export default class TpLinkCloud {
     }
 
     /**
-     * 
-     * @param {string} method 
+     *
+     * @param {string} method
      * @param {object} [params]
      */
     async request(method, params) {
-        
+
         if (!this.token && method !== 'login')
             throw new Error("No token provided");
-        
+
         const httpResponse = await jsonApi.post((this.appServerUrl || "https://wap.tplinkcloud.com/") + (this.token ? ("?token=" + this.token) : ''), {
             "method": method,
             "params": params || {}
@@ -96,7 +96,7 @@ export default class TpLinkCloud {
 
         if (response.error_code !== 0)
             throw new Error("TP-Link API error (" + response.error_code + "): " + response.msg);
-        
+
         return response.result;
     }
 
@@ -105,15 +105,15 @@ export default class TpLinkCloud {
             deviceId: deviceId || this.deviceId,
             requestData: JSON.stringify({[module]: {[action]: {}}})
         });
-        
+
         if (!("responseData" in result))
             throw new Error(`result does not contain property "responseData"`);
-        
+
         const response = JSON.parse(result.responseData);
 
         if (!(module in response))
             throw new Error(`responseData does not contain property "${module}"`);
-            
+
         if (!(action in response[module]))
             throw new Error(`responseData.${module} does not contain property "${action}"`);
 
@@ -125,10 +125,10 @@ export default class TpLinkCloud {
      */
     async getEmeterStatus() {
         let result = await this.passthrough("emeter", "get_realtime");
-        
+
         if (typeof result !== 'object')
             throw new Error("Failed to get the emeter status");
-        
+
         return result;
     }
 }

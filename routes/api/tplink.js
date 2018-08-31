@@ -13,7 +13,7 @@ router.post('/login', async (req, res, next) => {
         res.status(403);
         res.end();
     }
-    
+
     res.json({
         token: tplink.token
     });

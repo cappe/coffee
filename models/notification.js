@@ -20,7 +20,7 @@ class Notification {
 
     /**
      * Send an incoming webhook to Slack
-     * @param {string} webhookUrl 
+     * @param {string} webhookUrl
      */
     async sendToSlack(webhookUrl) {
         return await jsonApi.post(webhookUrl, {
@@ -30,13 +30,13 @@ class Notification {
     }
 
     /**
-     * 
-     * @param {PushSubscription[]} subscriptions 
+     *
+     * @param {PushSubscription[]} subscriptions
      */
     async sendTo(subscriptions) {
         if (!Array.isArray(subscriptions) || subscriptions.length === 0)
             return;
-        
+
         let sendPromises = [];
 
         const errorHandler = async (err, subscription) => {
@@ -50,7 +50,7 @@ class Notification {
                 console.error(err);
             }
         };
-        
+
         for (let i = 0; i < subscriptions.length; i++) {
             sendPromises.push(
                 webpush

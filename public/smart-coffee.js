@@ -5,8 +5,8 @@ class SmartCoffee {
 
     /**
      * Authenticate the user for gaining access to config
-     * @param {String} email 
-     * @param {String} password 
+     * @param {String} email
+     * @param {String} password
      * @returns {Promise<TpLinkCloud>}
      * @throws If login failed
      */

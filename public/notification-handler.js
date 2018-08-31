@@ -4,7 +4,7 @@ export default class NotificationHandler {
     constructor({pushManager, appServerKeyLocation}) {
         /** @type {PushManager} */
         this.pushManager = pushManager;
-        
+
         /** @type {string} */
         this.endpoint = null;
 
@@ -41,24 +41,24 @@ export default class NotificationHandler {
     async sync() {
         // Get existing subscription
         const subscription = await this.pushManager.getSubscription();
-        
+
         if (!subscription)
             return null;
-        
+
         let response = await jsonApi.post("/api/push-subscriptions", subscription);
 
         // Handle 201 Created with Location header as it is not redirected automatically
         if (response.status === 201)
             response = await jsonApi.get(response.headers.get("Location"));
-            
+
         // Store the redirected endpoint for later usage
         this.endpoint = response.url;
-        
+
         const result = await response.json() || {};
 
         // Store the subscribed events
         this.events = result.events || [];
-        
+
         return result;
     }
 
@@ -68,14 +68,14 @@ export default class NotificationHandler {
 
     /**
      * Subscribe to an event
-     * @param {string} event 
+     * @param {string} event
      * @returns {Promise<boolean>}
      */
     async subscribe(event) {
         // Check if already subscribed
         if (this.subscribed(event))
             return;
-        
+
         if (!await this.pushManager.getSubscription()) {
 
             if (!this.appServerKey)
@@ -86,7 +86,7 @@ export default class NotificationHandler {
                 userVisibleOnly: true,
                 applicationServerKey: this.appServerKey
             });
-            
+
         }
 
         if (!this.endpoint)
@@ -110,18 +110,18 @@ export default class NotificationHandler {
             return;
 
         const subscription = await this.pushManager.getSubscription();
-        
+
         if (!subscription)
             throw new Error("Already unsubscribed from all events");
-            
+
         if (!this.endpoint)
             await this.sync();
-        
+
         // Remove event from local status
         const i = this.events.indexOf(event);
         if (i !== -1)
             this.events.splice(i, 1);
-        
+
         // In case there are no active notification events, let's delete the whole subscription
         if (this.events.length === 0) {
             // Unsubscribe from the Web Push endpoint
@@ -135,7 +135,7 @@ export default class NotificationHandler {
 
             return;
         }
-        
+
         await jsonApi.delete(`${this.endpoint}/events/${event}`);
     }
 }

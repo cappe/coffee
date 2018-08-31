@@ -11,13 +11,13 @@ router.use(async (req, res, next) => {
     // Skip request body related logic when possible
     if (['POST', 'PUT'].indexOf(req.method) === -1)
         return next();
-    
+
     // Set PushSubscription instance to the request
     req.pushSubscription = await PushSubscription.findOrNew(req.body);
-    
+
     // Always set/override domain from the request headers
     req.pushSubscription.set({domain: req.hostname});
-    
+
     return next();
 });
 
@@ -26,7 +26,7 @@ router.use(async (req, res, next) => {
  */
 router.param('id', async function(req, res, next, id) {
     const sub = await PushSubscription.get(id);
-    
+
     if (sub) {
         // Set PushSubscription instance to the request
         res.locals.pushSubscription = sub;
@@ -90,12 +90,12 @@ router.route('/:id')
 
         return next();
     })
-    
+
     // Delete the whole subscription
     .delete(async (req, res, next) => {
         /** @type {PushSubscription} */
         const sub = res.locals.pushSubscription;
-        
+
         await sub.destroy();
 
         return next();
@@ -113,10 +113,10 @@ router.route('/:id/events/:event')
 
         // Toggle the requested event on
         await sub.subscribe(req.params.event);
-                
+
         return next();
     })
-    
+
     // Unsubscribe from a notification event
     .delete(async (req, res, next) => {
         /** @type {PushSubscription} */
@@ -133,7 +133,7 @@ router.use(function (req, res, next) {
     // Turn 200 OK without response body into 204 No Content
     if (!res.body && res.statusCode === 200)
         res.status(204);
-    
+
     res.end();
 });
 

@@ -5,7 +5,7 @@ export default class EventLogEntry extends ActiveRecord {
     constructor(props, opts) {
         props = props || {};
         opts = opts || {};
-        
+
         if (!props.at)
             props.at = new Date;
 
@@ -13,7 +13,7 @@ export default class EventLogEntry extends ActiveRecord {
     }
 
     static get table() { return "eventlog"; }
-    
+
     static get primaryKey() { return "id"; }
 
     static async boot(tableList) {

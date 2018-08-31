@@ -30,7 +30,7 @@ class App {
 
     error(message) {
         alert(message);
-        
+
         return this;
     }
 
@@ -43,7 +43,7 @@ class App {
             this.error("Olet estänyt ilmoitukset!");
             return;
         }
-        
+
         element.classList.add('waiting');
 
         if (element.checked) {
@@ -51,16 +51,16 @@ class App {
         } else {
             await this.notifications.unsubscribe(element.value);
         }
-        
+
         element.classList.remove('waiting');
     }
 
     async main() {
         /** @type {HTMLInputElement[]} */
         const checkboxes = this.options.eventCheckboxes;
-        
+
         await this.notifications.sync();
-        
+
         for (const x of checkboxes) {
             // Set initial status
             x.checked = this.notifications.subscribed(x.value);

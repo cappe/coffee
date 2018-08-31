@@ -5,7 +5,7 @@ self.addEventListener("push", event => {
         // set the tag if none provided – this makes sure the browser will group (or replace) the notifications, if there's multiple
         if (!data.tag)
             data.tag = 'default';
-        
+
         // show the notification
         await self.registration.showNotification(data.title, data);
 

@@ -5,7 +5,7 @@ export default class ActiveRecord {
     constructor(props, opts) {
         /** @type {Object<string, any>} */
         this.__data = Object.assign({}, props);
-        
+
         this.__meta = Object.assign({
             isNew: true
         }, opts || {});
@@ -42,7 +42,7 @@ export default class ActiveRecord {
      */
     static async boot(tableList) {
         const table = this.table;
-        
+
         if (tableList.indexOf(table) === -1) {
             await r.tableCreate(this.table, { primaryKey: this.primaryKey }).run();
             console.info(`Created table '${table}'`);
@@ -67,7 +67,7 @@ export default class ActiveRecord {
 
         return o;
     }
-    
+
     /**
      * Whether the record was loaded from database or manually created
      * @returns {boolean}
@@ -75,11 +75,11 @@ export default class ActiveRecord {
     isNew() {
         return this.__meta.isNew;
     }
-    
+
     set(attributes) {
         Object.assign(this.__data, attributes || {});
     }
-    
+
     /**
      * Deletes the record from the database
      * @returns {Promise<void>}
@@ -87,7 +87,7 @@ export default class ActiveRecord {
     async destroy() {
         await this.constructor.delete(this[this.constructor.primaryKey]);
     }
-    
+
     /**
      * Deletes a record from the database using primary key
      * @returns {Promise<void>}
@@ -103,7 +103,7 @@ export default class ActiveRecord {
     async save() {
         await this.constructor.query().insert(this.toJSON(), {conflict: "update"});
     }
-    
+
     static query(opts) {
         return r.table(this.table, opts);
     }
@@ -115,18 +115,18 @@ export default class ActiveRecord {
     static async get(id) {
         if (!id)
             return undefined;
-        
+
         const row = await this.query().get(id).run();
         return row && new this(row, { isNew: false });
     }
-    
+
     /**
      * @returns {Promise<any[]>}
      */
     static async getAll() {
         return await this.findAll({});
     }
-    
+
     /**
      * @returns {Promise<any[]>}
      */
@@ -139,7 +139,7 @@ export default class ActiveRecord {
 
         return all;
     }
-    
+
     /**
      * @returns {Promise<any>}
      */
@@ -149,14 +149,14 @@ export default class ActiveRecord {
 
         if (rows.length !== 1)
             return undefined;
-            
+
         return new this(rows[0], { isNew: false });
     }
 
     /**
-     * 
-     * @param {Object} props 
-     * @returns {Promise<any>} props 
+     *
+     * @param {Object} props
+     * @returns {Promise<any>} props
      */
     static async findOrNew(props) {
         const obj = new this(props);

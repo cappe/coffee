@@ -37,7 +37,7 @@ export default class CoffeeMaker extends ActiveRecord {
         props = props || {};
         if (!(props.cloud instanceof TpLinkCloud))
             props.cloud = new TpLinkCloud(props.cloud || {});
-        
+
         if (!props.calibration) {
             // set the initial values
             props.calibration = Object.assign({
@@ -60,12 +60,12 @@ export default class CoffeeMaker extends ActiveRecord {
                 interval: POLLING_INTERVAL_DEFAULT
             };
         }
-        
+
         super(props, opts);
     }
-    
+
     static get table() { return "configs"; }
-    
+
     static get primaryKey() { return "domain"; }
 
     /**
@@ -76,19 +76,19 @@ export default class CoffeeMaker extends ActiveRecord {
         await super.afterBoot();
         await this.startListening()
     }
-    
+
     /** @type {string} */
     get domain() { return this.__data.domain; }
-    
+
     /** @type {string} */
     get slackUrl() { return this.__data.slackUrl; }
-    
+
     /** @type {TpLinkCloud} */
     get cloud() { return this.__data.cloud; }
-    
+
     /**  @type {CoffeeMakerCalibration} */
     get calibration() { return this.__data.calibration; }
-    
+
     /** @type {CoffeeMakerState} */
     get state() { return this.__data.state; }
 
@@ -98,7 +98,7 @@ export default class CoffeeMaker extends ActiveRecord {
     isColdStart() {
         if (this.state.lastPowerOff === null)
             return true;
-        
+
         return (new Date().getTime() - this.state.lastPowerOff.getTime()) / 1000 > this.calibration.coldStartThresholdSeconds;
     }
 
@@ -108,12 +108,12 @@ export default class CoffeeMaker extends ActiveRecord {
     static async startListening() {
         /** @type {CoffeeMaker[]} */
         const coffeeMakers = await this.getAll();
-        
+
         for (let coffeeMaker of coffeeMakers) {
             coffeeMaker.startListening();
         }
     }
-    
+
     /**
      * Stop listening events on all coffee makers
      */
@@ -139,8 +139,8 @@ export default class CoffeeMaker extends ActiveRecord {
 
     /**
      * Log an event into event log table
-     * @param {string} event 
-     * @param {Object} params 
+     * @param {string} event
+     * @param {Object} params
      */
     async log(event, params) {
         const logEntry = new EventLogEntry({
@@ -152,7 +152,7 @@ export default class CoffeeMaker extends ActiveRecord {
     }
 
     /**
-     * 
+     *
      * @param {string} event
      * @param {Object} params
      */
@@ -172,42 +172,42 @@ export default class CoffeeMaker extends ActiveRecord {
                 console.error(e);
             });
     }
-    
+
     /**
      * @returns {boolean}
      */
     hasJustBeenPoweredOn() {
         if (!this.state.previous)
             return false;
-        
+
         return this.state.previous.power < this.calibration.powerOnThresholdWatts
             && this.state.current.power > this.calibration.powerOnThresholdWatts;
     }
-    
+
     /**
      * @returns {boolean}
-     */ 
+     */
     hasJustBeenPoweredOff() {
         if (!this.state.previous)
             return false;
-        
+
         return this.state.previous.power > this.calibration.powerOnThresholdWatts
             && this.state.current.power < this.calibration.powerOnThresholdWatts;
     }
-    
+
     /**
      * @returns {boolean}
      */
     hasJustStartedHeatingTheWater() {
         if (this.state.start !== null)
             return false;
-        
+
         return this.isHeatingTheWater();
     }
-    
+
     /**
      * @returns {boolean}
-     */ 
+     */
     hasJustFinishedHeatingTheWater() {
         if (this.state.start === null)
             return false;
@@ -216,9 +216,9 @@ export default class CoffeeMaker extends ActiveRecord {
         if ((this.state.current.progress || 0) < 0.10)
             return false;
 
-        return !this.isHeatingTheWater(); 
+        return !this.isHeatingTheWater();
     }
-    
+
     /**
      * @returns {boolean}
      */
@@ -252,7 +252,7 @@ export default class CoffeeMaker extends ActiveRecord {
      */
     updateWaterHeatingStatus() {
         const { calibration, state } = this;
-        
+
         if (this.hasJustStartedHeatingTheWater()) {
             const startState = state.previous || state.current;
             startState.progress = 0;
@@ -333,7 +333,7 @@ export default class CoffeeMaker extends ActiveRecord {
 
         this.updatePowerStatus();
         this.updateWaterHeatingStatus();
-        
+
         // always save the state
         await this.save();
 
@@ -355,7 +355,7 @@ export default class CoffeeMaker extends ActiveRecord {
     startListening() {
         if (this.isListening())
             return;
-        
+
         if (!this.cloud.token) {
             console.error(`No TP-Link cloud token provided for "${this.domain}"`);
             return;
@@ -388,10 +388,10 @@ export default class CoffeeMaker extends ActiveRecord {
     stopListening() {
         if (!this.isListening())
             return;
-        
+
         clearInterval(timers[this.domain]);
         timers[this.domain] = null;
         console.log(`${this.domain}: Stopped polling`);
     }
-    
+
 }

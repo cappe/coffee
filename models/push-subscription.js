@@ -7,8 +7,8 @@ import ActiveRecord from './active-record';
 export default class PushSubscription extends ActiveRecord {
 
     /**
-     * 
-     * @param {object} props 
+     *
+     * @param {object} props
      * @param {object} [opts]
      */
     constructor(props, opts) {
@@ -24,12 +24,12 @@ export default class PushSubscription extends ActiveRecord {
         await super.boot(tableList);
 
         const indexList = await (await this.query().indexList().run()).toArray();
-        
+
         if (!indexList.includes("domain")) {
             await this.query().indexCreate("domain").run();
             await this.query().indexWait("domain").run();
         }
-        
+
         // create a compound index containing domain & event
         if (!indexList.includes("domain-event")) {
             await this.query().indexCreate("domain-event", (subscription) => {
@@ -53,7 +53,7 @@ export default class PushSubscription extends ActiveRecord {
     get domain() {
         return this.__data.domain;
     }
-    
+
     /**
      * The actual Web Push endpoint URI
      * @type {string}
@@ -61,7 +61,7 @@ export default class PushSubscription extends ActiveRecord {
     get endpoint() {
         return this.__data.endpoint;
     }
-    
+
     /**
      * Subscription expiration time (?)
      * @type {string|Date}
@@ -69,7 +69,7 @@ export default class PushSubscription extends ActiveRecord {
     get expirationTime() {
         return this.__data.expirationTime;
     }
-    
+
     /**
      * Encryption keys
      * @type {{auth: string, p256dh: string}}
@@ -86,13 +86,13 @@ export default class PushSubscription extends ActiveRecord {
         // ensure that an array will always be returned
         if (!Array.isArray(this.__data.events))
             this.__data.events = [];
-        
+
         return this.__data.events;
     }
 
     /**
      * Subscribe to a notification event & save
-     * @param {string} event 
+     * @param {string} event
      */
     async subscribe(event) {
         if (this.events.indexOf(event) === -1)
@@ -101,20 +101,20 @@ export default class PushSubscription extends ActiveRecord {
         // Save to the db
         await this.save();
     }
-    
+
     /**
      * Unsubscribe form a notification event & save
-     * @param {string} event 
+     * @param {string} event
      */
     async unsubscribe(event) {
         const index = this.events.indexOf(event);
         if (index !== -1)
             this.events.splice(index, 1);
-            
+
         // Save to the db
         await this.save();
     }
-    
+
     static async getAllByDomain(domain) {
         const result = await this.query().getAll(domain, { index: "domain" }).run();
         const all = [];
@@ -125,7 +125,7 @@ export default class PushSubscription extends ActiveRecord {
 
         return all;
     }
-    
+
     static async getAllByDomainAndEvent(domain, event) {
         const result = await this.query().getAll([domain, event], { index: "domain-event" }).run();
         const all = [];
