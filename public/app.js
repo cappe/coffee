@@ -78,25 +78,36 @@ class App {
 
     }
 
+    updateStatusGui(status) {
+        if (!this.options.statusGauge)
+            return;
+
+        const fg = this.options.statusGauge.querySelector('.fg');
+        fg.style.transitionDuration = status.state.progress ? '5s' : '0s';
+        fg.style.strokeDashoffset = fg.style.strokeDasharray * (1 - (status.state.progress || 0));
+
+        const html = document.documentElement;
+
+        if (status.power) {
+            html.classList.add('power-on');
+        } else {
+            html.classList.remove('power-on');
+        }
+    }
+
     async updateStatus() {
         try {
             const response = await jsonApi.get('/api/coffeemakers');
-            const json = await response.json();
-            const html = document.documentElement;
-
-            if (json.power) {
-                html.classList.add('power-on');
-            } else {
-                html.classList.remove('power-on');
-            }
+            this.updateStatusGui(await response.json());
         } catch (err) {
             console.error(err);
         }
     }
 }
 
-export default new App({
+export default window.app = new App({
     serviceWorker: "./service-worker.js",
     eventCheckboxes: document.querySelectorAll('#notifications input'),
+    statusGauge: document.querySelector('#power-button'),
     appServerKeyLocation: "./api/vapid.pub"
 });

@@ -3,17 +3,33 @@
     <form id="notifications">
         <div>Ilmoita minulle heti, kun</div>
         <div id="subscribe-event-list">
-            <label>
-                <input type="checkbox" name="events[]" value="starting"><span>kahvia on tulossa</span>
-            </label>
-            <label>
-                <input type="checkbox" name="events[]" value="finished"><span>kahvi on valmista</span>
-            </label>
-            <label>
-                <input type="checkbox" name="events[]" value="power-off"><span>kahvinkeitin sammutetaan</span>
-            </label>
+            <div>
+                <label class="toggle">
+                    <input type="checkbox" name="events[]" value="starting">
+                    <div class="switch"><span class="indicator"></span></div>
+                </label>
+                <span>kahvia on tulossa</span>
+            </div>
+
+            <div>
+                <label class="toggle">
+                    <input type="checkbox" name="events[]" value="finished">
+                    <div class="switch"><span class="indicator"></span></div>
+                </label>
+                <span>kahvi on valmista</span>
+            </div>
+            <div>
+                <label class="toggle">
+                    <input type="checkbox" name="events[]" value="power-off">
+                    <div class="switch"><span class="indicator"></span></div>
+                </label>
+                <span>keitin sammutetaan</span>
+            </div>
         </div>
     </form>
 </main>
-<svg id="power-button" viewBox="0 0 512 512"><use href="./images/icons.svg#power-button" xlink:href="./images/power-button.svg#power-button"></use></svg>
+<svg id="power-button" class="gauge" viewBox="0 0 120 120">
+    <circle cx="60" cy="60" r="59" class="bg" fill="none" stroke-width="1" />
+    <circle cx="60" cy="60" r="59" class="fg" fill="none" stroke-width="1" style="transform: rotate(-90deg); transform-origin: 50% 50%; stroke-dasharray:370.707933; stroke-dashoffset:370.707933;" />
+</svg>
 <%- include('partials/footer.html') %>

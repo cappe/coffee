@@ -1,5 +1,5 @@
 
-@import url('https://fonts.googleapis.com/css?family=Ruda');
+@import url('https://fonts.googleapis.com/css?family=Bitter');
 
 * {
     box-sizing: border-box;
@@ -12,26 +12,10 @@ html, body {
 
 html {
     font-size: 16px;
-    background-image: url(images/bg.jpg);
-    background-size: cover;
-    background-position: center center;
-    background-color: #221815;
+    background-color: #000;
     height: 100%;
 
-    font-family: 'Ruda', sans-serif;
-}
-
-html:before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, .85);
-    z-index: -1;
+    font-family: 'Bitter', sans-serif;
 }
 
 body {
@@ -47,10 +31,16 @@ body > main {
 
 form {
     display: block;
-    padding: 40px 40px;
-    color: #aa9990;
+    padding: 10px 10px;
+    color: #84766b;
     font-size: 14px;
     margin: 10px;
+    max-width: 500px;
+    text-transform: lowercase;
+}
+
+form span {
+    vertical-align: middle;
 }
 
 main form .button, main form .button > span {
@@ -76,14 +66,20 @@ form h3 {
     margin-bottom: 18px;
 }
 
-form h3 > * {
+form h3 > small {
     font-size: 13px;
     display: block;
-    font-weight: 600;
+    font-weight: 400;
+    opacity: .7;
 }
 
 form * {
     outline: none;
+}
+
+form > * {
+    padding: 5px;
+    box-sizing: border-box;
 }
 
 button, .button {
@@ -133,9 +129,8 @@ label > span {
 
 input[type=text], input[type=password], input[type=email], select {
     display: block;
-    box-shadow: rgba(0, 0, 0, 0.15) 0 1px 3px;
     border: 1px transparent solid;
-    background: rgba(0, 0, 0, .5);
+    background: rgba(20, 20, 20, .5);
     color: inherit;
     height: 36px;
     line-height: 36px;
@@ -155,94 +150,112 @@ input:focus {
     box-shadow: rgba(0, 0, 0, 0.25) 0 1px 4px;
 }
 
-#subscribe-event-list > label {
-    user-select: none;
-    cursor: pointer;
-}
-
-#subscribe-event-list > label > input {
-    display: none;
-}
-#subscribe-event-list > label > * {
-    vertical-align: middle;
-}
-
-#subscribe-event-list > label > span:before {
-    content: ' ';
-    display: inline-block;
-    width: 16px;
-    border-radius: 2px;
-    height: 16px;
-    line-height: 16px;
-    margin-right: 8px;
-    font-size: 16px;
-    text-align: center;
-    border: #689c16 2px solid;
-    border-radius: 3px;
-    content: '\2714';
-    color: transparent;
-    transition-timing-function: ease-out;
-    transition-duration: .2s;
-    transition-property: transform, background-color, border-color;
-    box-shadow: rgba(0, 0, 0, .1) 0 1px 7px;
-}
-
-#subscribe-event-list > label > span:after {
-    content: '';
-    display: block;
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background-color: rgba(50, 70, 10, .16);
-    transform: translateY(-100%) scale(0);
-    z-index: -1;
-    transition-timing-function: ease-out;
-    transition-duration: .2s;
-    transition-property: filter, transform, opacity, text-shadow;
-    opacity: 0;
-}
-
-#subscribe-event-list > label:active > span:after {
-    opacity: 1;
-    transform: translateY(-100%) scale(2);
-    filter: blur(.5px);
-}
-
-#subscribe-event-list > label > input.waiting + span:after {
-    opacity: 0.25;
-    transform: translateY(-100%) scale(3);
-    filter: blur(2px);
-}
-
-#subscribe-event-list > label > input:checked + span:before {
-    background-color: #689c16;
-    color: #fff;
-}
-
-#subscribe-event-list > label > input:checked + span:hover:before {
-    background-color: #9dd632;
-    border-color: #9dd632;
-    text-shadow: rgba(0, 0, 0, .35) 0 1px 2px;
-}
-
-#subscribe-event-list > label > input + span:hover {
-    color: #e5c19d;
-}
-
 #power-button {
     position: absolute;
-    bottom: 30px;
-    right: 30px;
-    fill: #aaa;
-    opacity: .2;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto;
     display: block;
-    width: 64px;
-    height: 64px;
+    width: 97vmin;
+    height: 97vmin;
+    max-width: 640px;
+    max-height: 640px;
+    z-index: -1;
 }
 
+.gauge .bg {
+    stroke: #121212;
+    opacity: .65;
+}
+
+html.power-on .gauge .fg {
+    stroke: rgba(240, 60, 10, .85);
+    opacity: .9;
+    will-change: stroke-dashoffset;
+    transition: stroke-dashoffset linear .1s;
+}
+
+/*
 html.power-on #power-button {
     opacity: .95;
     fill: rgb(255, 120, 0);
     filter: drop-shadow(#ff5020 0 0 15px);
+}
+*/
+#subscribe-event-list {
+    text-align: left;
+}
+label.toggle {
+    display: inline-block;
+    margin: 3px 6px 3px 0;
+    position: relative;
+    background: #121212;
+    overflow:hidden;
+    border-radius: 4px;
+    padding: 4px 6px;
+    border: 1px solid rgb(20, 20, 20);
+    border-bottom-color: rgb(16, 16, 16);
+    border-right-color: rgb(16, 16, 16);
+    border-bottom-width: 2px;
+    vertical-align: middle;
+    perspective: 20px;
+    cursor: pointer;
+    box-shadow: rgba(0, 0, 0, .2) 0 0 2px;
+    width: auto;
+    height: auto;
+    }
+label.toggle input {
+    display: none;
+}
+
+label.toggle > .switch, label.toggle input:checked:active + .switch {
+    background: linear-gradient(to right, #141414 0%, #1c1c1c 50%, #141414 100%);
+    background-size: 200% 100%;
+    background-position: 0% 50%;
+    width: 45px;
+    height: 22px;
+    border-radius: 7px 9px 9px 7px;
+    border: 1px #0e0e0e solid;
+    border-top-color: #121212;
+    padding-right: 5px;
+    box-sizing: border-box;
+    transform: rotateY(-15deg) translateX(-1px);
+    transition: all .2s ease-out;
+    box-shadow: rgba(0, 0, 0, .3) 3px 0px 1px;
+    position: relative;
+}
+label.toggle input:checked + .switch, label.toggle input:not(:checked):active + .switch {
+    transform: rotateY(15deg) translateX(1px);
+    background-position: 100% 50%;
+    border-radius: 9px 7px 7px 9px;
+    box-shadow: rgba(0, 0, 0, .3) -3px 0px 1px;
+}
+
+label.toggle > .switch > .indicator {
+    background: #882020;
+    display: block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 1px rgba(50,50,50,0.75) solid;
+    transition: all .15s linear;
+    position: absolute;
+    right: 6px;
+    top: 0;
+    bottom: 1px;
+    margin: auto;
+    box-shadow: inset rgba(255, 245, 220, .15) 0 0 7px;
+    opacity: .6;
+}
+
+label.toggle input:checked + .switch > .indicator {
+    opacity: 1;
+    background: rgba(240, 70, 10, .85);
+    box-shadow: inset rgba(255, 245, 220, .15) 0 0 7px, rgba(250, 100, 50, .85) 0 0 15px -1px;
+}
+
+@media screen and (max-width: 639px) {
+    #fork-me { display: none; }
 }
