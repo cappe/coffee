@@ -9,7 +9,7 @@ const timers = {};
 
 /** @type {Number} */
 const POLLING_INTERVAL_DEFAULT = 5000; // 5 seconds
-const POLLING_INTERVAL_OFFLINE = 60000; // 1 minute
+const POLLING_INTERVAL_OFFLINE = 300000; // 5 minute
 const POLLING_INTERVAL_ERROR = 900000; // 15 minutes
 
 /**
