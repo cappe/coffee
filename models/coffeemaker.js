@@ -311,7 +311,11 @@ export default class CoffeeMaker extends ActiveRecord {
     async updateStatus () {
         try {
             const { power, total } = await this.cloud.getEmeterStatus();
-            this.state.current = { power, total, progress: null };
+            this.state.current = {
+                power,
+                total,
+                progress: this.state.previous.progress || 0,
+            };
 
             // if everything went well, let's make sure we are polling at the normal rate
             if (this.state.interval !== POLLING_INTERVAL_DEFAULT)
