@@ -176,14 +176,6 @@ html.power-on .gauge .fg {
     will-change: stroke-dashoffset;
     transition: stroke-dashoffset linear .1s;
 }
-
-/*
-html.power-on #power-button {
-    opacity: .95;
-    fill: rgb(255, 120, 0);
-    filter: drop-shadow(#ff5020 0 0 15px);
-}
-*/
 #subscribe-event-list {
     text-align: left;
 }
