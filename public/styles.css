@@ -180,11 +180,11 @@ html.power-on .gauge .fg {
     text-align: left;
 }
 label.toggle {
+    user-select: none;
     display: inline-block;
     margin: 3px 6px 3px 0;
     position: relative;
     background: #121212;
-    overflow:hidden;
     border-radius: 4px;
     padding: 4px 6px;
     border: 1px solid rgb(20, 20, 20);
@@ -207,34 +207,34 @@ label.toggle > .switch, label.toggle input:checked:active + .switch {
     background-size: 200% 100%;
     background-position: 0% 50%;
     width: 45px;
-    height: 22px;
-    border-radius: 7px 9px 9px 7px;
+    height: 24px;
+    border-radius: 5px 6px 6px 5px;
     border: 1px #0e0e0e solid;
     border-top-color: #121212;
     padding-right: 5px;
     box-sizing: border-box;
-    transform: rotateY(-15deg) translateX(-1px);
+    transform: rotateY(-4deg) translate3d(-2px, 0, .5px);
     transition: all .2s ease-out;
-    box-shadow: rgba(0, 0, 0, .3) 3px 0px 1px;
+    box-shadow: rgba(0, 0, 0, .3) 2px 0px 1px;
     position: relative;
 }
 label.toggle input:checked + .switch, label.toggle input:not(:checked):active + .switch {
-    transform: rotateY(15deg) translateX(1px);
+    transform: rotateY(4deg) translate3d(2px, 0, .5px);
     background-position: 100% 50%;
-    border-radius: 9px 7px 7px 9px;
-    box-shadow: rgba(0, 0, 0, .3) -3px 0px 1px;
+    border-radius: 6px 5px 5px 6px;
+    box-shadow: rgba(0, 0, 0, .3) -2px 0px 1px;
 }
 
 label.toggle > .switch > .indicator {
     background: #882020;
     display: block;
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
     border: 1px rgba(50,50,50,0.75) solid;
     transition: all .15s linear;
     position: absolute;
-    right: 6px;
+    right: 7px;
     top: 0;
     bottom: 1px;
     margin: auto;
