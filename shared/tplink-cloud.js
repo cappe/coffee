@@ -87,6 +87,9 @@ export default class TpLinkCloud {
         if (!this.token && method !== 'login')
             throw new Error("No token provided");
 
+	if (this.token && method === 'login')
+		this.token = null;
+
         const httpResponse = await jsonApi.post((this.appServerUrl || "https://wap.tplinkcloud.com/") + (this.token ? ("?token=" + this.token) : ''), {
             "method": method,
             "params": params || {}
