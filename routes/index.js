@@ -31,7 +31,7 @@ router.get('/', async (req, res) => {
 
     res.render('index', {
         title: `Kahvi-ilmoitin – ${coffeeMaker.domain}`,
-        coffeeMaker: coffeeMaker
+        coffeeMaker,
     });
 });
 
@@ -43,6 +43,18 @@ router.get('/config', async (req, res) => {
     res.render('config', {
         title: `Asetukset – Kahvi-ilmoitin – ${coffeeMaker.domain}`,
         coffeeMaker: coffeeMaker
+    });
+});
+
+/* The statistics page. */
+router.get('/stats', async (req, res) => {
+    /** @type {CoffeeMaker} */
+    const coffeeMaker = res.locals.coffeeMaker;
+
+    res.render('stats', {
+        title: `Tilastot – Kahvi-ilmoitin – ${coffeeMaker.domain}`,
+        coffeeMaker,
+        from: (new Date((new Date).getTime() - 86400000 * 30)).toISOString().substr(0, 10),
     });
 });
 

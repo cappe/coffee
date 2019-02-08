@@ -1,0 +1,52 @@
+<%- include('partials/header.html') %>
+<main style="max-width: 800px; width: 100%; position: relative">
+    <canvas id="chart" width="800" height="400" data-from="<%- from %>"></canvas>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/locale/fi.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js" defer></script>
+<script type="module">
+    import jsonApi from "../shared/json-api.js";
+    const groupBy = (a, k) => a.reduce((r, x) => ((r[k(x)] = r[k(x)] || []).push(x), r), {});
+    const chart = document.getElementById("chart");
+    const ctx = chart.getContext('2d');
+
+    const { from, to = new Date } = chart.dataset;
+
+    jsonApi
+        .get(`api/stats?from=${from}&to=${to}`)
+        .then(response => response.json())
+        .then(response => {
+        const groups = groupBy(response.events, x => new Date(x.at).toISOString().substr(0, 10));
+        const entries = Object.entries(groups);
+        const labels = entries.map(([k, v]) => moment(k).format("dd D.M."));
+        const data = entries.map(([k, v]) => ({ y: v.length, entries: v }));
+    
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [{
+                    label: 'Pannullista / vrk',
+                    data,
+                    backgroundColor: '#a98',
+                }]
+            },
+            options: {
+                tooltips: {
+                    callbacks: {
+                        beforeLabel: (i) => data[i.index].entries.map(x => moment(x.at).format('HH:mm')).join("\n")
+                    }
+                },
+                scales: {
+                    //xAxes: [{ type: "time", time: { displayFormats: { day: "dd D.M." } } }],
+                    yAxes: [{
+                        ticks: { beginAtZero: true },
+                        gridLines: { color: 'rgba(255, 255, 255, .1)' },
+                    }],
+                }
+            }
+        });
+    });
+</script>
+<%- include('partials/footer.html') %>

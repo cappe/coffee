@@ -7,6 +7,7 @@ import base64url from 'urlsafe-base64';
 import coffeeMakerRoutes from './coffeemakers';
 import pushSubscriptionRoutes from './push-subscriptions';
 import tplinkRoutes from './tplink';
+import statsRoutes from './stats';
 
 const router = express.Router();
 

@@ -1,4 +1,5 @@
 import ActiveRecord from "./active-record";
+import r from "../r";
 
 export default class EventLogEntry extends ActiveRecord {
 
@@ -69,6 +70,29 @@ export default class EventLogEntry extends ActiveRecord {
      */
     get params() {
         return this.__data.params || {};
+    }
+
+    toJSON() {
+        const json = super.toJSON();
+        delete json.params;
+        return json;
+    }
+
+    static async search(domain, event, from, to, fields = {"at": true, "params": {"progress": true}}) {
+        const result = await this.query()
+            .filter({domain, event})
+            .filter(r.row("params")("progress").gt(.5))
+            .filter(r.row("at").during(from, to))
+            .orderBy(r.asc("at"))
+            .pluck(fields)
+            .run();
+        const all = [];
+
+        await result.eachAsync(entry => {
+            all.push(new this(entry, { isNew: false }));
+        });
+
+        return all;
     }
 
 };
