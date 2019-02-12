@@ -1,6 +1,17 @@
 <%- include('partials/header.html') %>
-<main style="max-width: 800px; width: 100%; position: relative">
-    <canvas id="chart" width="800" height="400" data-from="<%- from %>"></canvas>
+<main style="position: relative; max-width: 100%; padding: 1em;">
+    <h2 style="color: #ccc"">Viimeisimmät 30 vrk</h2>
+    <div style="max-width: 800px; width: 100%; position: relative; margin: .4em auto;">
+        <canvas id="chart" width="700" height="240" data-from="<%- from %>"></canvas>
+    </div>
+    <div style="display: flex; flex-wrap: wrap; max-width: 800px; width: 100%">
+        <div style="width: 350px; position: relative; margin: .4em auto;">
+            <canvas id="weekday-chart" width="500" height="390"></canvas>
+        </div>
+        <div style="width: 350px; position: relative; margin: .4em auto;">
+            <canvas id="timeofday-chart" width="500" height="390"></canvas>
+        </div>
+    </div>
 </main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/locale/fi.js" defer></script>
@@ -22,7 +33,20 @@
         const labels = entries.map(([k, v]) => moment(k).format("dd D.M."));
         const data = entries.map(([k, v]) => ({ y: v.length, entries: v }));
     
-        var myChart = new Chart(ctx, {
+        const weekDayEntries = Object.entries(groupBy(entries, ([k, v]) => moment(k).format("dddd")));
+        const weekDays = weekDayEntries.map(([k]) => k);
+        const weekDayData = weekDayEntries.map(([, v]) => v.reduce((a, [,v]) => a + v.length, 0));
+        const total = weekDayData.reduce((a, b) => a + b, 0);
+        const ctx2 = document.getElementById("weekday-chart").getContext('2d');
+
+        const todEntries = Object.entries(groupBy(response.events, x => moment(x.at).format('HH'))).sort((a, b) => a[0]-b[0]);
+        const todLabels = todEntries.map(([k]) => `${k}:00 – ${k}:59`);
+        const todTotal = todEntries.reduce((a, [,v]) => a + v.length, 0);
+        const ctx3 = document.getElementById("timeofday-chart").getContext('2d');
+
+        window.weekDays = [weekDays, weekDayData];
+
+        new Chart(ctx, {
             type: 'bar',
             data: {
                 labels,
@@ -33,13 +57,18 @@
                 }]
             },
             options: {
+                legend: { display: false },
+                title: {
+                    display: true,
+                    text: 'Pannullista / vrk',
+                    fontColor: "#ccc"
+                },
                 tooltips: {
                     callbacks: {
                         beforeLabel: (i) => data[i.index].entries.map(x => moment(x.at).format('HH:mm')).join("\n")
                     }
                 },
                 scales: {
-                    //xAxes: [{ type: "time", time: { displayFormats: { day: "dd D.M." } } }],
                     yAxes: [{
                         ticks: { beginAtZero: true },
                         gridLines: { color: 'rgba(255, 255, 255, .1)' },
@@ -47,6 +76,62 @@
                 }
             }
         });
+
+    new Chart(ctx2, {
+        type: 'doughnut',
+        data: {
+            labels: weekDays,
+            datasets: [{
+                data: weekDayData.map(v => Math.round(v / total * 100)),
+                backgroundColor: weekDays.map((v, i) => `hsl(${360/weekDays.length*i}, 100%, 69%)`),
+                borderColor: 'black',
+                hoverBackgroundColor: weekDays.map((v, i) => `hsl(${360/weekDays.length*i}, 100%, 40%)`),
+            }]
+        },
+        options: {
+            title: {
+                display: true,
+                text: 'Viikonpäiväjakauma',
+                fontColor: "#ccc"
+            },
+            legend: {
+                position: 'left'
+            },
+            tooltips: {
+                callbacks: {
+                    label: (i, { labels, datasets: [{ data }] }) => `${labels[i.index]}: ${data[i.index]}%`
+                }
+            }
+        }
     });
+
+    new Chart(ctx3, {
+        type: 'doughnut',
+        data: {
+            labels: todLabels,
+            datasets: [{
+                data: todEntries.map(v => Math.round(v[1].length / todTotal * 100)),
+                backgroundColor: todLabels.map((v, i) => `hsl(${360/todLabels.length*i}, 100%, 69%)`),
+                hoverBackgroundColor: todLabels.map((v, i) => `hsl(${360/todLabels.length*i}, 100%, 40%)`),
+                borderColor: 'black',
+            }]
+        },
+        options: {
+            title: {
+                display: true,
+                text: 'Kellonaikajakauma',
+                fontColor: "#ccc"
+            },
+            legend: {
+                position: 'left'
+            },
+            tooltips: {
+                callbacks: {
+                    label: (i, { labels, datasets: [{ data }] }) => `${labels[i.index]}: ${data[i.index]}%`
+                }
+            }
+        }
+    });
+});
 </script>
 <%- include('partials/footer.html') %>
