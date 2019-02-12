@@ -72,12 +72,6 @@ export default class EventLogEntry extends ActiveRecord {
         return this.__data.params || {};
     }
 
-    toJSON() {
-        const json = super.toJSON();
-        delete json.params;
-        return json;
-    }
-
     static async search(domain, event, from, to, fields = {"at": true, "params": {"progress": true}}) {
         const result = await this.query()
             .filter({domain, event})
