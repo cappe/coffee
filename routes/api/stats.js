@@ -1,6 +1,6 @@
 import express from "express";
-import CoffeeMaker from '../../models/coffeemaker';
-import EventLogEntry from "../../models/event-log-entry";
+import CoffeeMaker from '../../models/coffeemaker.js';
+import EventLogEntry from "../../models/event-log-entry.js";
 
 const router = express.Router();
 

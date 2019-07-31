@@ -1,23 +1,24 @@
 {
   "name": "smart-coffee",
+  "type": "module",
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node --nolazy --experimental-modules --loader ./esm-loader.mjs ./app.js",
-    "debug": "node --nolazy --experimental-modules --loader ./esm-loader.mjs -r dotenv/config ./app.js",
-    "vapid": "node --nolazy --experimental-modules --loader ./esm-loader.mjs -r dotenv/config ./scripts/create-vapid-keys.js"
+    "start": "node --nolazy --experimental-modules ./app.js",
+    "debug": "node --nolazy --experimental-modules -r dotenv/config ./app.js",
+    "vapid": "node --nolazy --experimental-modules -r dotenv/config ./scripts/create-vapid-keys.js"
   },
   "dependencies": {
-    "body-parser": "^1.18.3",
-    "ejs": "2.x",
-    "express": "^4.16.3",
+    "body-parser": "^1.19.0",
+    "ejs": "^2.6.2",
+    "express": "^4.17.1",
     "node-fetch": "1.x",
     "rethinkdbdash": "2.x",
     "urlsafe-base64": "1.x",
-    "web-push": "3.x"
+    "web-push": "^3.3.5"
   },
   "devDependencies": {
-    "@types/node": "^8.10.27",
+    "@types/node": "^8.10.51",
     "@types/rethinkdbdash": "github:types/rethinkdbdash",
     "dotenv": "4.x"
   },

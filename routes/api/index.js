@@ -1,13 +1,13 @@
 import express from "express";
-import PushSubscription from '../../models/push-subscription';
-import CoffeeMaker from '../../models/coffeemaker';
+import PushSubscription from '../../models/push-subscription.js';
+import CoffeeMaker from '../../models/coffeemaker.js';
 import bodyParser from 'body-parser';
 import base64url from 'urlsafe-base64';
 
-import coffeeMakerRoutes from './coffeemakers';
-import pushSubscriptionRoutes from './push-subscriptions';
-import tplinkRoutes from './tplink';
-import statsRoutes from './stats';
+import coffeeMakerRoutes from './coffeemakers.js';
+import pushSubscriptionRoutes from './push-subscriptions.js';
+import tplinkRoutes from './tplink.js';
+import statsRoutes from './stats.js';
 
 const router = express.Router();
 

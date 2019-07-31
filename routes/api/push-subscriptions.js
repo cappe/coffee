@@ -1,6 +1,6 @@
 import express from "express";
-import PushSubscription from '../../models/push-subscription';
-import Notification from '../../models/notification';
+import PushSubscription from '../../models/push-subscription.js';
+import Notification from '../../models/notification.js';
 
 const router = express.Router();
 

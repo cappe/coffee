@@ -1,8 +1,8 @@
-import ActiveRecord from './active-record';
+import ActiveRecord from './active-record.js';
 import TpLinkCloud from '../shared/tplink-cloud.js';
-import PushSubscription from './push-subscription';
-import Notification from './notification';
-import EventLogEntry from './event-log-entry';
+import PushSubscription from './push-subscription.js';
+import Notification from './notification.js';
+import EventLogEntry from './event-log-entry.js';
 
 /** @type {Object<string, NodeJS.Timer>} */
 const timers = {};
@@ -74,7 +74,8 @@ export default class CoffeeMaker extends ActiveRecord {
      */
     static async afterBoot() {
         await super.afterBoot();
-        await this.startListening()
+        if (process.env.NODE_ENV !== "development")
+            await this.startListening();
     }
 
     /** @type {string} */

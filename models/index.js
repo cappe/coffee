@@ -1,8 +1,8 @@
-import r from "../r";
-import CoffeeMaker from "./coffeemaker";
-import ActiveRecord from "./active-record";
-import PushSubscription from "./push-subscription"
-import EventLogEntry from "./event-log-entry";
+import r from "../r.js";
+import CoffeeMaker from "./coffeemaker.js";
+import ActiveRecord from "./active-record.js";
+import PushSubscription from "./push-subscription.js"
+import EventLogEntry from "./event-log-entry.js";
 
 /**
  * @type {typeof ActiveRecord[]}

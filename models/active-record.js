@@ -1,4 +1,4 @@
-import r from '../r';
+import r from '../r.js';
 
 export default class ActiveRecord {
 

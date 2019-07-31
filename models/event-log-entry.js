@@ -1,5 +1,5 @@
-import ActiveRecord from "./active-record";
-import r from "../r";
+import ActiveRecord from "./active-record.js";
+import r from "../r.js";
 
 export default class EventLogEntry extends ActiveRecord {
 

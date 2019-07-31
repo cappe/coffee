@@ -1,6 +1,6 @@
 import webpush from 'web-push';
-import PushSubscription from './push-subscription';
-import jsonApi from '../shared/json-api';
+import PushSubscription from './push-subscription.js';
+import jsonApi from '../shared/json-api.js';
 
 webpush.setVapidDetails(
     process.env.APP_URL || 'https://kofeiini.fi',

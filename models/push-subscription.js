@@ -1,4 +1,4 @@
-import ActiveRecord from './active-record';
+import ActiveRecord from './active-record.js';
 
 
 /**

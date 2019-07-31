@@ -1,8 +1,8 @@
 import express from 'express';
-import routes from './routes';
+import routes from './routes/index.js';
 import ejs from 'ejs';
-import r from './r';
-import models from './models';
+import r from './r.js';
+import models from './models/index.js';
 
 process.on('unhandledRejection', (reason, p) => {
     console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);

@@ -1,5 +1,5 @@
 import express from "express";
-import CoffeeMaker from '../../models/coffeemaker';
+import CoffeeMaker from '../../models/coffeemaker.js';
 
 const router = express.Router();
 

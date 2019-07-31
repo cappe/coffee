@@ -1,6 +1,6 @@
 import express from "express";
-import CoffeeMaker from '../../models/coffeemaker';
-import TpLinkCloud from '../../shared/tplink-cloud';
+import CoffeeMaker from '../../models/coffeemaker.js';
+import TpLinkCloud from '../../shared/tplink-cloud.js';
 
 const router = express.Router();
 
