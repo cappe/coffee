@@ -56,8 +56,8 @@ app.use((err, req, res, next) => {
 app.set('port', process.env.PORT || 3000);
 
 (async () => {
-    await dbInit;
-    await models;
+    await dbInit();
+    await models();
 
     app.listen(app.get('port'), () => {
         console.log(`HTTP server listening on port ${app.get('port')}`);

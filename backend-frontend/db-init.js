@@ -1,7 +1,7 @@
 import r from "./r.js";
 import { db } from "./config.js";
 
-export default (async () => {
+export default async () => {
     let cursor = await r.dbList().run();
     const dbList = await cursor.toArray();
     if (!dbList.includes(db.name)) {
@@ -10,4 +10,4 @@ export default (async () => {
     } else {
         console.info(`Database '${db.name}' already exists`);
     }
-})();
+};
