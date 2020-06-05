@@ -13,15 +13,15 @@ const models = [CoffeeMaker, PushSubscription, EventLogEntry];
  * Shoud we move this logic into ActiveRecord::boot() or something?
  */
 
-export default r.tableList().run()
-    .then(cursor => cursor.toArray())
-    .then(async tableList => {
-        for (let model of models) {
-            await model.boot(tableList);
-        }
-    })
-    .then(async () => {
-        for (let model of models) {
-            await model.afterBoot();
-        }
-    });
+export default (async () => {
+    const cursor = await r.tableList().run();
+    const tableList = await cursor.toArray();
+
+    for (let model of models) {
+        await model.boot(tableList);
+    }
+
+    for (let model of models) {
+        await model.afterBoot();
+    }
+})();

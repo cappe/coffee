@@ -1,12 +1,7 @@
 import webpush from 'web-push';
 import PushSubscription from './push-subscription.js';
 import jsonApi from '../shared/json-api.js';
-
-webpush.setVapidDetails(
-    process.env.APP_URL || 'https://kofeiini.fi',
-    process.env.VAPID_PUBLIC_KEY,
-    process.env.VAPID_PRIVATE_KEY
-);
+import { vapid } from '../config.js';
 
 class Notification {
 
@@ -36,6 +31,12 @@ class Notification {
     async sendTo(subscriptions) {
         if (!Array.isArray(subscriptions) || subscriptions.length === 0)
             return;
+
+        webpush.setVapidDetails(
+            vapid.appUrl,
+            vapid.publicKey,
+            vapid.privateKey,
+        );
 
         let sendPromises = [];
 

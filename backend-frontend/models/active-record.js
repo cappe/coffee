@@ -43,11 +43,11 @@ export default class ActiveRecord {
     static async boot(tableList) {
         const table = this.table;
 
-        if (tableList.indexOf(table) === -1) {
+        if (!tableList.includes(table)) {
             await r.tableCreate(this.table, { primaryKey: this.primaryKey }).run();
             console.info(`Created table '${table}'`);
         } else {
-            console.info(`Table '${table}' already created`);
+            console.info(`Table '${table}' already exists`);
         }
     }
 

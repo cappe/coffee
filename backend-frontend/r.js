@@ -1,20 +1,15 @@
 import rethinkdbdash from 'rethinkdbdash';
-import url from 'url';
+import { db } from './config.js';
 
-if (!process.env.DATABASE_URL)
-    throw new Error('DATABASE_URL environment variable is undefined');
-
-const db = url.parse(process.env.DATABASE_URL);
-
-if (db.protocol !== 'rethinkdb:')
-    throw new Error(`Sorry, ${db.protocol.substr(0, -1)} is not supported. Please use RethinkDB.`);
+if (db.type !== 'rethinkdb')
+    throw new Error(`Sorry, ${db.type} is not supported. Please use RethinkDB.`);
 
 const r = rethinkdbdash({
     servers: [{
-        host: db.hostname,
-        port: parseInt(db.port || "28015")
+        host: db.host,
+        port: db.port,
     }],
-    db: db.pathname.substr(1),
+    db: db.name,
     cursor: true
 });
 
