@@ -39,18 +39,27 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan -t rsa -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
-          echo "$DEPLOY_KEY" > ~/.ssh/id_rsa && chmod 0600 ~/.ssh/id_rsa
+          echo "$DEPLOY_KEY" > ~/.ssh/deploy.key && chmod 0600 ~/.ssh/deploy.key
+          cat ~/.ssh/config <<EOT
+          Host production
+            User ${{ secrets.DEPLOY_USER }}
+            HostName ${{ secrets.DEPLOY_HOST }}
+            Port ${{ secrets.DEPLOY_PORT }}
+            IdentityFile ~/.ssh/deploy.key
+          EOT
+      - name: Update repo
+        run: |
+          ssh -T production <<EOT
+            git fetch origin
+            git checkout $GITHUB_SHA -- docker-compose.yml
+          EOT
       - name: Pull updated images & update running containers
         run: |
-          ssh -tt ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} -p ${{ secrets.DEPLOY_PORT }} <<EOT
+          ssh -T production <<EOT
             export VAPID_PRIVATE_KEY=${{ secrets.VAPID_PRIVATE_KEY }}
             export VAPID_PUBLIC_KEY=${{ secrets.VAPID_PUBLIC_KEY }}
             export DOCKER_REGISTRY=${{ secrets.DOCKER_REGISTRY }}
-            cd ~/src
-            git fetch origin
-            git checkout $GITHUB_SHA -- docker-compose.yml
             echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin ${{ secrets.DOCKER_REGISTRY }}
-            docker-compose -f docker-compose.yml pull
+            docker-compose -f docker-compose.yml pull --quiet
             docker-compose -f docker-compose.yml up --no-build -d --remove-orphans
-            exit
           EOT
