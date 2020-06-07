@@ -6,8 +6,6 @@ import models from './models/index.js';
 
 process.on('unhandledRejection', (reason, p) => {
     console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
-    debugger;
-    // application specific logging, throwing an error, or other logic here
 });
 
 
