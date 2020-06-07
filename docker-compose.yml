@@ -17,5 +17,35 @@ services:
     image: rethinkdb:2.4
     volumes:
       - db-data:/data
+  certbot:
+    image: certbot/dns-ovh:latest
+    restart: 'no'
+    volumes:
+      - ./letsencrypt:/etc/letsencrypt
+      - ./ovh.ini:/etc/letsencrypt/ovh.ini
+    environment:
+      DEPLOY_DOMAIN: ${DEPLOY_DOMAIN}
+      DEPLOY_EMAIL: ${DEPLOY_EMAIL}
+    entrypoint: 'certbot certonly
+      -d ${DEPLOY_DOMAIN}
+      --email=${DEPLOY_EMAIL}
+      --agree-tos
+      --non-interactive
+      --dns-ovh
+      --dns-ovh-propagation-seconds=10
+      --dns-ovh-credentials=/etc/letsencrypt/ovh.ini'
+  ssl:
+    restart: unless-stopped
+    image: ${DOCKER_REGISTRY}/smart-coffee/ssl:latest
+    environment:
+      LE_PATH: ${LE_PATH}
+    volumes:
+      - ./letsencrypt:/etc/letsencrypt
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - backend-frontend
+      - certbot
 volumes:
   db-data:

@@ -4,6 +4,8 @@ services:
     build: backend-frontend
     ports:
       - 3000:80
+  ssl:
+    build: ssl
   db:
     ports:
       - 8080:8080
