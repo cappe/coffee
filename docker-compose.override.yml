@@ -2,3 +2,8 @@ version: '3.7'
 services:
   backend-frontend:
     build: backend-frontend
+    ports:
+      - 3000:3000
+  db:
+    ports:
+      - 8080:8080
