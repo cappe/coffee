@@ -1,0 +1,51 @@
+version: '3.7'
+services:
+  backend-frontend:
+    restart: unless-stopped
+    container_name: backend-frontend
+    image: ${DOCKER_REGISTRY}/smart-coffee/backend-frontend:latest
+    environment:
+      - DATABASE_URL=${DATABASE_URL:-rethinkdb://db:28015/production}
+      - PORT=${PORT:-80}
+      - VAPID_PRIVATE_KEY=${VAPID_PRIVATE_KEY}
+      - VAPID_PUBLIC_KEY=${VAPID_PUBLIC_KEY}
+      - NODE_ENV=${NODE_ENV:-production}
+    depends_on:
+      - db
+  db:
+    restart: unless-stopped
+    image: rethinkdb:2.4
+    volumes:
+      - db-data:/data
+  certbot:
+    image: certbot/dns-ovh:latest
+    restart: 'no'
+    volumes:
+      - ./letsencrypt:/etc/letsencrypt
+      - ./ovh.ini:/etc/letsencrypt/ovh.ini
+    environment:
+      DEPLOY_DOMAIN: ${DEPLOY_DOMAIN}
+      DEPLOY_EMAIL: ${DEPLOY_EMAIL}
+    entrypoint: 'certbot certonly
+      -d ${DEPLOY_DOMAIN}
+      --email=${DEPLOY_EMAIL}
+      --agree-tos
+      --non-interactive
+      --dns-ovh
+      --dns-ovh-propagation-seconds=10
+      --dns-ovh-credentials=/etc/letsencrypt/ovh.ini'
+  ssl:
+    restart: unless-stopped
+    image: ${DOCKER_REGISTRY}/smart-coffee/ssl:latest
+    environment:
+      LE_PATH: ${LE_PATH}
+    volumes:
+      - ./letsencrypt:/etc/letsencrypt
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - backend-frontend
+      - certbot
+volumes:
+  db-data:

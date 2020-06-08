@@ -8,10 +8,17 @@ const router = express.Router();
  * Middleware to initialize a domain-specific CoffeeMaker instance to the request
  */
 router.use(async (req, res, next) => {
-    // Set CoffeeMaker instance to the request
-    res.locals.coffeeMaker = await CoffeeMaker.findOrNew({domain: req.hostname});
+    try {
+        // Set CoffeeMaker instance to the request
+        res.locals.coffeeMaker = await CoffeeMaker.findOrNew({domain: req.hostname});
 
-    return next();
+        return next();
+    } catch (e) {
+        console.error(e);
+        const err = new Error('Internal Server Error');
+        err['status'] = 500;
+        return next(err);
+    }
 });
 
 router.use(express.static('./public'));

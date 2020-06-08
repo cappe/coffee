@@ -1,13 +1,11 @@
 import express from 'express';
 import routes from './routes/index.js';
 import ejs from 'ejs';
-import r from './r.js';
+import dbInit from './db-init.js';
 import models from './models/index.js';
 
 process.on('unhandledRejection', (reason, p) => {
     console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
-    debugger;
-    // application specific logging, throwing an error, or other logic here
 });
 
 
@@ -55,10 +53,13 @@ app.use((err, req, res, next) => {
 
 app.set('port', process.env.PORT || 3000);
 
-models.then(() => {
+(async () => {
+    await dbInit();
+    await models();
+
     app.listen(app.get('port'), () => {
         console.log(`HTTP server listening on port ${app.get('port')}`);
     });
-});
+})();
 
 export default app;

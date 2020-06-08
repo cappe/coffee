@@ -4,9 +4,9 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node --nolazy --experimental-modules ./app.js",
-    "debug": "node --nolazy --experimental-modules -r dotenv/config ./app.js",
-    "vapid": "node --nolazy --experimental-modules -r dotenv/config ./scripts/create-vapid-keys.js"
+    "start": "node ./app.js",
+    "debug": "node -r dotenv/config ./app.js",
+    "vapid": "node -r dotenv/config ./scripts/create-vapid-keys.js"
   },
   "dependencies": {
     "body-parser": "^1.19.0",

@@ -107,11 +107,15 @@ export default class CoffeeMaker extends ActiveRecord {
      * Start listening events on all coffee makers
      */
     static async startListening() {
-        /** @type {CoffeeMaker[]} */
-        const coffeeMakers = await this.getAll();
+        try {
+            /** @type {CoffeeMaker[]} */
+            const coffeeMakers = await this.getAll();
 
-        for (let coffeeMaker of coffeeMakers) {
-            coffeeMaker.startListening();
+            for (let coffeeMaker of coffeeMakers) {
+                coffeeMaker.startListening();
+            }
+        } catch (e) {
+            console.error(e);
         }
     }
 

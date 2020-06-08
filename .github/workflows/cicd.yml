@@ -1,0 +1,76 @@
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    env:
+      VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
+      VAPID_PUBLIC_KEY: ${{ secrets.VAPID_PUBLIC_KEY }}
+      DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
+      NODE_ENV: production
+
+    steps:
+      - name: Checkout the sources
+        uses: actions/checkout@v1
+      - name: Login to private registry
+        run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin ${{ secrets.DOCKER_REGISTRY }}
+      - name: Build the docker-compose stack
+        run: docker-compose build
+      - name: Push to registry
+        run: docker-compose push
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Setup SSH config
+        env:
+          DEPLOY_KEY: "${{ secrets.DEPLOY_KEY }}"
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -t rsa -p ${{ secrets.DEPLOY_PORT }} ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
+          echo "$DEPLOY_KEY" > ~/.ssh/deploy.key && chmod 0600 ~/.ssh/deploy.key
+          cat > ~/.ssh/config <<EOT
+          Host production
+            User ${{ secrets.DEPLOY_USER }}
+            HostName ${{ secrets.DEPLOY_HOST }}
+            Port ${{ secrets.DEPLOY_PORT }}
+            IdentityFile ~/.ssh/deploy.key
+          EOT
+      - name: Make sure docker-compose.yml files are up-to-date
+        run: |
+          ssh -T production <<EOT
+          git fetch origin
+          git checkout $GITHUB_SHA -- docker-compose.yml
+          EOT
+      - name: Store OVH configuration for Let's Encrypt DNS validation
+        run: |
+          ssh -T production <<EOT
+          cat > ovh.ini <<INI
+          dns_ovh_endpoint=ovh-eu
+          dns_ovh_application_key=${{ secrets.DNS_OVH_APPLICATION_KEY }}
+          dns_ovh_application_secret=${{ secrets.DNS_OVH_APPLICATION_SECRET }}
+          dns_ovh_consumer_key=${{ secrets.DNS_OVH_CONSUMER_KEY }}
+          INI
+          chmod 0600 ovh.ini
+          EOT
+      - name: Pull updated images & update running containers
+        run: |
+          ssh -T production <<EOT
+          export VAPID_PRIVATE_KEY=${{ secrets.VAPID_PRIVATE_KEY }}
+          export VAPID_PUBLIC_KEY=${{ secrets.VAPID_PUBLIC_KEY }}
+          export DOCKER_REGISTRY=${{ secrets.DOCKER_REGISTRY }}
+          export DEPLOY_DOMAIN=${{ secrets.DEPLOY_DOMAIN }}
+          export DEPLOY_EMAIL=${{ secrets.DEPLOY_EMAIL }}
+          export LE_PATH=${{ secrets.LE_PATH }}
+          echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin ${{ secrets.DOCKER_REGISTRY }}
+          docker-compose -f docker-compose.yml pull --quiet
+          docker-compose -f docker-compose.yml up --no-build -d --remove-orphans
+          docker-compose -f docker-compose.yml logs
+          EOT

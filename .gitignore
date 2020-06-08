@@ -1,5 +1,3 @@
-node_modules
-rethinkdb_data
-*.exe
-.env
-.vscode
+.env*
+*.ini
+letsencrypt
