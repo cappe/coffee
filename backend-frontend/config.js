@@ -13,7 +13,7 @@ export const db = {
 };
 
 export const vapid = {
-    appUrl: process.env.APP_URL || 'http://localhost',
+    subject: process.env.VAPID_SUBJECT,
     publicKey: process.env.VAPID_PUBLIC_KEY,
     privateKey: process.env.VAPID_PRIVATE_KEY,
 };

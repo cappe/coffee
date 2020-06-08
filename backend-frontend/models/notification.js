@@ -33,7 +33,7 @@ class Notification {
             return;
 
         webpush.setVapidDetails(
-            vapid.appUrl,
+            vapid.subject,
             vapid.publicKey,
             vapid.privateKey,
         );
