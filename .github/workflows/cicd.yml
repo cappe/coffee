@@ -52,14 +52,15 @@ jobs:
           EOT
       - name: Store OVH configuration for Let's Encrypt DNS validation
         run: |
+          mkdir -p letsencrypt
           ssh -T production <<EOT
-          cat > ovh.ini <<INI
+          cat > letsencrypt/ovh.ini <<INI
           dns_ovh_endpoint=ovh-eu
           dns_ovh_application_key=${{ secrets.DNS_OVH_APPLICATION_KEY }}
           dns_ovh_application_secret=${{ secrets.DNS_OVH_APPLICATION_SECRET }}
           dns_ovh_consumer_key=${{ secrets.DNS_OVH_CONSUMER_KEY }}
           INI
-          chmod 0600 ovh.ini
+          chmod 0600 letsencrypt/ovh.ini
           EOT
       - name: Pull updated images & update running containers
         run: |
@@ -74,7 +75,7 @@ jobs:
           echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin ${{ secrets.DOCKER_REGISTRY }}
           docker-compose -f docker-compose.yml pull --quiet
           docker-compose -f docker-compose.yml up --no-build -d --remove-orphans
-          docker-compose -f docker-compose.yml logs
+          docker-compose -f docker-compose.yml logs -t
           EOT
       - name: Prune all stale images & containers
         run: |

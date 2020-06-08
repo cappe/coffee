@@ -23,7 +23,6 @@ services:
     restart: 'no'
     volumes:
       - ./letsencrypt:/etc/letsencrypt
-      - ./ovh.ini:/etc/letsencrypt/ovh.ini
     environment:
       DEPLOY_DOMAIN: ${DEPLOY_DOMAIN}
       DEPLOY_EMAIL: ${DEPLOY_EMAIL}
