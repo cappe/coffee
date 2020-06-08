@@ -1,25 +1,18 @@
 ## Installation (for development)
 
 ```bash
-git clone git@github.com:valtzu/smart-coffee.git
+git clone git@github.com:valtzu/smart-coffee
 cd smart-coffee
-npm install
-npm run vapid
+docker-compose up
 ```
 
-You will also need a [RethinkDB server](https://rethinkdb.com/docs/install/ "How to install RethinkDB server").
+You will notice that some env variables have to be set, but the intention is to get rid of those.
+The project uses OVH DNS validation to get valid SSL cert even for development, so if you don't have OVH DNS services, you're out of luck.
 
-Finally copy .env.example to .env and set the config values if needed.
+Set your domain's A record to point to localhost / 127.0.0.1 and you're good to go.
 
-## Debug
-```
-npm run debug
-```
+Vapid keys can be generated using the `npm run vapid` but that will change in the future.
 
-## Run without debug
-```
-npm run start
-```
 
 # Credits
 Coffee cup icon made by [Freepik](http://www.freepik.com "Freepik") from [www.flaticon.com](https://www.flaticon.com "Flaticon") is licensed by [CC 3.0 BY](http://creativecommons.org/licenses/by/3.0/ "Creative Commons BY 3.0").
