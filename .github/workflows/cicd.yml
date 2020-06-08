@@ -74,3 +74,9 @@ jobs:
           docker-compose -f docker-compose.yml up --no-build -d --remove-orphans
           docker-compose -f docker-compose.yml logs
           EOT
+      - name: Prune all stale images & containers
+        run: |
+          ssh -T production <<EOT
+          docker container prune -f --filter "until=24h"
+          docker image prune -f -a --filter "until=24h"
+          EOT
