@@ -1,6 +1,0 @@
-version: '3.7'
-services:
-  backend-frontend:
-    image: ${DOCKER_REGISTRY}/smart-coffee/backend-frontend:${DOCKER_IMAGE_TAG:-latest}
-  ssl:
-    image: ${DOCKER_REGISTRY}/smart-coffee/ssl:${DOCKER_IMAGE_TAG:-latest}

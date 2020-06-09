@@ -1,0 +1,29 @@
+version: '3.7'
+services:
+  backend-frontend:
+    image: ${DOCKER_REGISTRY}/smart-coffee/backend-frontend:${BUILD_TAG:-latest}
+  ssl:
+    image: ${DOCKER_REGISTRY}/smart-coffee/ssl:${BUILD_TAG:-latest}
+    environment:
+      SSL_KEY: /etc/letsencrypt/live/${LETSENCRYPT_SUBDIR}/privkey.pem
+      SSL_CRT: /etc/letsencrypt/live/${LETSENCRYPT_SUBDIR}/fullchain.pem
+    volumes:
+      - ./letsencrypt:/etc/letsencrypt
+    depends_on:
+      - certbot
+  certbot:
+    image: certbot/dns-ovh:latest
+    restart: 'no'
+    volumes:
+      - ./letsencrypt:/etc/letsencrypt
+    environment:
+      LETSENCRYPT_DOMAIN: ${LETSENCRYPT_DOMAIN}
+      LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
+    entrypoint: 'certbot certonly
+      -d ${LETSENCRYPT_DOMAIN}
+      --email=${LETSENCRYPT_EMAIL}
+      --agree-tos
+      --non-interactive
+      --dns-ovh
+      --dns-ovh-propagation-seconds=10
+      --dns-ovh-credentials=/etc/letsencrypt/ovh.ini'

@@ -1,6 +1,10 @@
 version: '3.7'
 services:
   backend-frontend:
-    build: backend-frontend
+    build:
+      context: backend-frontend
+      target: ${BUILD_TARGET:-dev}
   ssl:
-    build: ssl
+    build:
+      context: ssl
+      target: ${BUILD_TARGET:-dev}
