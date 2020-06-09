@@ -2,8 +2,7 @@ version: '3.7'
 services:
   backend-frontend:
     restart: unless-stopped
-    container_name: backend-frontend
-    image: ${DOCKER_REGISTRY}/smart-coffee/backend-frontend:latest
+    image: backend-frontend:latest
     environment:
       - DATABASE_URL=${DATABASE_URL:-rethinkdb://db:28015/production}
       - PORT=${PORT:-80}
@@ -36,7 +35,7 @@ services:
       --dns-ovh-credentials=/etc/letsencrypt/ovh.ini'
   ssl:
     restart: unless-stopped
-    image: ${DOCKER_REGISTRY}/smart-coffee/ssl:latest
+    image: ssl:latest
     environment:
       LE_PATH: ${LE_PATH}
     volumes:
