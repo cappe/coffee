@@ -27,19 +27,19 @@ export default class PushSubscription extends ActiveRecord {
     // calling super.boot creates the table if not existing already
     await super.boot(tableList);
 
-    const indexList = await (await this.query().indexList().run()).toArray();
+    const indexList = await (await this.query().indexList()).toArray();
 
     if (!indexList.includes("domain")) {
-      await this.query().indexCreate("domain").run();
-      await this.query().indexWait("domain").run();
+      await this.query().indexCreate("domain");
+      await this.query().indexWait("domain");
     }
 
     // create a compound index containing domain & event
     if (!indexList.includes("domain-event")) {
       await this.query().indexCreate("domain-event", (subscription) => {
         return subscription("events").map((event) => [subscription("domain"), event]);
-      }, {multi: true}).run();
-      await this.query().indexWait("domain-event").run();
+      }, {multi: true});
+      await this.query().indexWait("domain-event");
     }
   }
 
@@ -120,7 +120,7 @@ export default class PushSubscription extends ActiveRecord {
   }
 
   static async getAllByDomain(domain) {
-    const result = await this.query().getAll(domain, {index: "domain"}).run();
+    const result = await this.query().getAll(domain, {index: "domain"});
     const all = [];
 
     await result.eachAsync(sub => {
@@ -131,7 +131,7 @@ export default class PushSubscription extends ActiveRecord {
   }
 
   static async getAllByDomainAndEvent(domain, event) {
-    const result = await this.query().getAll([domain, event], {index: "domain-event"}).run();
+    const result = await this.query().getAll([domain, event], {index: "domain-event"});
     const all = [];
 
     await result.eachAsync(sub => {

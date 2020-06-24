@@ -25,21 +25,21 @@ export default class EventLogEntry extends ActiveRecord {
     // calling super.boot creates the table if not existing already
     await super.boot(tableList);
 
-    const indexList = await (await this.query().indexList().run()).toArray();
+    const indexList = await (await this.query().indexList()).toArray();
 
     if (!indexList.includes("at")) {
-      await this.query().indexCreate("at").run();
-      await this.query().indexWait("at").run();
+      await this.query().indexCreate("at");
+      await this.query().indexWait("at");
     }
 
     if (!indexList.includes("domain")) {
-      await this.query().indexCreate("domain").run();
-      await this.query().indexWait("domain").run();
+      await this.query().indexCreate("domain");
+      await this.query().indexWait("domain");
     }
 
     if (!indexList.includes("event")) {
-      await this.query().indexCreate("event").run();
-      await this.query().indexWait("event").run();
+      await this.query().indexCreate("event");
+      await this.query().indexWait("event");
     }
   }
 
@@ -83,7 +83,7 @@ export default class EventLogEntry extends ActiveRecord {
       .filter(r.row("at").during(from, to))
       .orderBy(r.asc("at"))
       .pluck(fields)
-      .run();
+      ;
     const all = [];
 
     await result.eachAsync(entry => {

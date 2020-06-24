@@ -2,7 +2,7 @@ import r from "./r.js";
 import {db} from "./config.js";
 
 export default async () => {
-  let cursor = await r.dbList().run();
+  const cursor = await r.dbList();
   const dbList = await cursor.toArray();
   if (!dbList.includes(db.name)) {
     await r.dbCreate(db.name);

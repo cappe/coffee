@@ -44,7 +44,7 @@ export default class ActiveRecord {
     const table = this.table;
 
     if (!tableList.includes(table)) {
-      await r.tableCreate(this.table, {primaryKey: this.primaryKey}).run();
+      await r.tableCreate(this.table, {primaryKey: this.primaryKey});
       console.info(`Created table '${table}'`);
     } else {
       console.info(`Table '${table}' already exists`);
@@ -94,7 +94,7 @@ export default class ActiveRecord {
    * @returns {Promise<void>}
    */
   static async delete(id) {
-    id && await this.query().get(id).delete().run();
+    id && await this.query().get(id).delete();
   }
 
   /**
@@ -117,7 +117,7 @@ export default class ActiveRecord {
     if (!id)
       return undefined;
 
-    const row = await this.query().get(id).run();
+    const row = await this.query().get(id);
     return row && new this(row, {isNew: false});
   }
 
@@ -133,7 +133,7 @@ export default class ActiveRecord {
    */
   static async findAll(predicate, opts) {
     const all = [];
-    const result = await this.query(opts).filter(predicate).run();
+    const result = await this.query(opts).filter(predicate);
     await result.eachAsync((row) => {
       all.push(new this(row, {isNew: false}));
     });
@@ -145,7 +145,7 @@ export default class ActiveRecord {
    * @returns {Promise<any>}
    */
   static async find(predicate, opts) {
-    const cursor = await this.query(opts).filter(predicate).nth(0).run();
+    const cursor = await this.query(opts).filter(predicate).nth(0);
     const rows = await cursor.toArray();
 
     if (rows.length !== 1)
