@@ -14,14 +14,14 @@ const models = [CoffeeMaker, PushSubscription, EventLogEntry];
  */
 
 export default async () => {
-    const cursor = await r.tableList().run();
-    const tableList = await cursor.toArray();
+  const cursor = await r.tableList().run();
+  const tableList = await cursor.toArray();
 
-    for (let model of models) {
-        await model.boot(tableList);
-    }
+  for (let model of models) {
+    await model.boot(tableList);
+  }
 
-    for (let model of models) {
-        await model.afterBoot();
-    }
+  for (let model of models) {
+    await model.afterBoot();
+  }
 };

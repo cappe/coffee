@@ -1,74 +1,75 @@
 import webpush from 'web-push';
 import PushSubscription from './push-subscription.js';
 import jsonApi from '../shared/json-api.js';
-import { vapid } from '../config.js';
+import {vapid} from '../config.js';
 
 class Notification {
 
-    constructor(attributes) {
-        Object.assign(this, {
-            icon: "/images/hot-coffee-cup-192.png",
-            badge: "/images/hot-coffee-cup-192.png",
-            body: "t. Kahvinkeitin"
-        }, attributes);
-    }
+  constructor(attributes) {
+    Object.assign(this, {
+      icon: "/images/hot-coffee-cup-192.png",
+      badge: "/images/hot-coffee-cup-192.png",
+      body: "t. Kahvinkeitin"
+    }, attributes);
+  }
 
-    /**
-     * Send an incoming webhook to Slack
-     * @param {string} webhookUrl
-     */
-    async sendToSlack(webhookUrl) {
-        return await jsonApi.post(webhookUrl, {
-            text: this.title,
-            icon_url: this.icon
-        });
-    }
+  /**
+   * Send an incoming webhook to Slack
+   * @param {string} webhookUrl
+   */
+  async sendToSlack(webhookUrl) {
+    return await jsonApi.post(webhookUrl, {
+      text: this.title,
+      icon_url: this.icon
+    });
+  }
 
-    /**
-     *
-     * @param {PushSubscription[]} subscriptions
-     */
-    async sendTo(subscriptions) {
-        if (!Array.isArray(subscriptions) || subscriptions.length === 0)
-            return;
+  /**
+   *
+   * @param {PushSubscription[]} subscriptions
+   */
+  async sendTo(subscriptions) {
+    if (!Array.isArray(subscriptions) || subscriptions.length === 0)
+      return;
 
-        webpush.setVapidDetails(
-            vapid.subject,
-            vapid.publicKey,
-            vapid.privateKey,
-        );
+    webpush.setVapidDetails(
+      vapid.subject,
+      vapid.publicKey,
+      vapid.privateKey,
+    );
 
-        let sendPromises = [];
+    let sendPromises = [];
 
-        const errorHandler = async (err, subscription) => {
-            // Delete subscription from the db if the end point is already 410 Gone
-            if (err.statusCode === 410) {
-                // Try to destroy – it doesn't really matter if it fails
-                try {
-                    await subscription.destroy();
-                } catch (e) {}
-            } else {
-                console.error(err);
-            }
-        };
-
-        for (let i = 0; i < subscriptions.length; i++) {
-            sendPromises.push(
-                webpush
-                    .sendNotification(subscriptions[i], JSON.stringify(this))
-                    .catch(async err => errorHandler(err, subscriptions[i]))
-            );
+    const errorHandler = async (err, subscription) => {
+      // Delete subscription from the db if the end point is already 410 Gone
+      if (err.statusCode === 410) {
+        // Try to destroy – it doesn't really matter if it fails
+        try {
+          await subscription.destroy();
+        } catch (e) {
         }
+      } else {
+        console.error(err);
+      }
+    };
 
-        await Promise.all(sendPromises);
+    for (let i = 0; i < subscriptions.length; i++) {
+      sendPromises.push(
+        webpush
+          .sendNotification(subscriptions[i], JSON.stringify(this))
+          .catch(async err => errorHandler(err, subscriptions[i]))
+      );
     }
 
-    static get(event) {
-        if (!(event in notifications))
-            throw new Error("Invalid event");
+    await Promise.all(sendPromises);
+  }
 
-        return notifications[event];
-    }
+  static get(event) {
+    if (!(event in notifications))
+      throw new Error("Invalid event");
+
+    return notifications[event];
+  }
 
 }
 
@@ -76,24 +77,24 @@ class Notification {
  * @type {Object<string, Notification>}
  */
 const notifications = {
-    "power-on": new Notification({
-        title: "Kahvinkeitin on laitettu päälle!"
-    }),
-    "starting": new Notification({
-        title: "Kahvia on tulossa pian!"
-    }),
-    "finishing": new Notification({
-        title: "Kahvi on pian valmista!"
-    }),
-    "finished": new Notification({
-        title: "Kahvi on valmista!"
-    }),
-    "power-off": new Notification({
-        title: "Kahvinkeitin on sammutettu!"
-    }),
-    "progress": new Notification({
-        title: "Kahvinkeittäminen edistyy"
-    }),
+  "power-on": new Notification({
+    title: "Kahvinkeitin on laitettu päälle!"
+  }),
+  "starting": new Notification({
+    title: "Kahvia on tulossa pian!"
+  }),
+  "finishing": new Notification({
+    title: "Kahvi on pian valmista!"
+  }),
+  "finished": new Notification({
+    title: "Kahvi on valmista!"
+  }),
+  "power-off": new Notification({
+    title: "Kahvinkeitin on sammutettu!"
+  }),
+  "progress": new Notification({
+    title: "Kahvinkeittäminen edistyy"
+  }),
 };
 
 export default Notification;
