@@ -1,5 +1,4 @@
-import http from "../http.js";
-const { fetch, Response, Headers } = http;
+import { fetch, Response, Headers } from "../http.js";
 
 let queue = Promise.resolve();
 
