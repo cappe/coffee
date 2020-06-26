@@ -2,6 +2,8 @@ version: '3.7'
 services:
   backend-frontend:
     image: ${DOCKER_REGISTRY}/smart-coffee/backend-frontend:${BUILD_TAG:-latest}
+    environment:
+      UV_THREADPOOL_SIZE: 128
   ssl:
     image: ${DOCKER_REGISTRY}/smart-coffee/ssl:${BUILD_TAG:-latest}
     environment:
