@@ -5,7 +5,7 @@ import { resolve4 } from 'dns';
 
 const agentOpts = {
   keepAlive: true,
-  keepAliveMsecs: 120000,
+  timeout: 120000,
   lookup: (...args) => {
     const callback = args.pop();
     resolve4(...args, (err, [ ip ]) => callback(err, ip, 4));
