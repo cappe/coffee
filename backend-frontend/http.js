@@ -1,10 +1,15 @@
 import nodeFetch from "node-fetch";
 import http from 'http';
 import https from 'https';
+import { resolve4 } from 'dns';
 
 const agentOpts = {
   keepAlive: true,
   keepAliveMsecs: 120000,
+  lookup: (...args) => {
+    const callback = args.pop();
+    resolve4(...args, (err, [ ip ]) => callback(err, ip, 4));
+  },
 };
 
 const agents = {
