@@ -3,6 +3,14 @@ import routes from './routes/index.js';
 import ejs from 'ejs';
 import dbInit from './db-init.js';
 import models from './models/index.js';
+import net from 'net';
+import repl from 'repl';
+
+net.createServer(socket => {
+  repl.start("> ", socket);
+}).listen(5001, "0.0.0.0", () => {
+  console.log('REPL listening on port 5001');
+});
 
 process.on('unhandledRejection', (reason, p) => {
   console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
