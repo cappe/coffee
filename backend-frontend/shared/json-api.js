@@ -1,7 +1,5 @@
 import { fetch, Response, Headers } from "../http.js";
 
-let queue = Promise.resolve();
-
 export default class JsonApi {
   /**
    *
@@ -30,7 +28,7 @@ export default class JsonApi {
     if (!(opts.headers instanceof Headers))
       opts.headers = new Headers(opts.headers);
 
-    return queue = queue.then(() => fetch(url, opts));
+    return fetch(url, opts);
   }
 
   /**
